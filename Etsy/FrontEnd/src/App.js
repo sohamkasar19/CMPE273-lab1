@@ -5,7 +5,7 @@ import { ReactDOM } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Signup  from './components/loginSignup/signup';
 import Login from './components/loginSignup/login';
-import Home from './components/loginSignup/homePage';
+import Home from './components/Home/homePage';
 
 
 function App() {

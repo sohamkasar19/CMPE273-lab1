@@ -1,5 +1,7 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
+import axios from 'axios';
+
 
 const LoginForm = () => {
   const [formValue, setformValue] = React.useState({
@@ -8,7 +10,16 @@ const LoginForm = () => {
   });
 
   const handleSubmit = (event) => {
-    // we will fill this in the coming paragraph
+    var data = {
+        Email: formValue.email,
+        Password: formValue.password
+    }
+    axios.post('http://localhost:8080/login', data).then((response) => {
+        if (response.status === 200) {
+            
+        }
+
+    });
   };
 
   const handleChange = (event) => {
@@ -22,7 +33,8 @@ const LoginForm = () => {
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <Form.Label>Email address</Form.Label>
         <Form.Control
-          type="email"
+          type="text"
+          name="email"
           placeholder="Enter email"
           value={formValue.email}
           onChange={handleChange}
@@ -33,13 +45,14 @@ const LoginForm = () => {
         <Form.Label>Password</Form.Label>
         <Form.Control
           type="password"
+          name="password"
           placeholder="Password"
           value={formValue.password}
           onChange={handleChange}
           required
         />
       </Form.Group>
-      <Button variant="primary" type="submit">
+      <Button variant="primary" type="submit" onClick={handleSubmit}>
         Login
       </Button>
     </Form>

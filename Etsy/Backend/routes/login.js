@@ -60,17 +60,17 @@ app.post('/', function (req, res) {
                     }
                     else {
                         console.log(result);
-                        // res.cookie('cookie', result[0].Firstname, {
-                        //     maxAge: 360000,
-                        //     httpOnly: false,
-                        //     path: '/'
-                        // });
+                        res.cookie('cookie', result[0].Firstname, {
+                            maxAge: 360000,
+                            httpOnly: false,
+                            path: '/'
+                        });
                         // res.cookie('Accounttype', result[0].Accounttype, {
                         //     maxAge: 360000,
                         //     httpOnly: false,
                         //     path: '/'
                         // });
-                        // req.session.user = result[0];
+                        req.session.user = result[0];
                         // res.writeHead(200, {
                         //     'Content-type': 'text/plain'
                         // })
