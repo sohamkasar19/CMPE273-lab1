@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import axios from 'axios';
 
 
@@ -16,7 +16,7 @@ const LoginForm = () => {
     }
     axios.post('http://localhost:8080/login', data).then((response) => {
         if (response.status === 200) {
-            
+          console.log()
         }
 
     });
@@ -52,9 +52,9 @@ const LoginForm = () => {
           required
         />
       </Form.Group>
-      <Button variant="primary" type="submit" onClick={handleSubmit}>
-        Login
-      </Button>
+      <div className="d-grid gap-2 rounded-circle">
+          <Button variant="dark" type="submit" size="md" onClick={handleSubmit}> Login</Button>
+      </div>
     </Form>
   );
 };
