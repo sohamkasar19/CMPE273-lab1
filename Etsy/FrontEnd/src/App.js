@@ -6,6 +6,7 @@ import Signup  from './components/loginSignup/signup';
 import Login from './components/loginSignup/login';
 import Home from './components/Home/homePage';
 import NavBar from './components/NavBar/NavBar';
+import Profile from './components/Profile/profile'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route  path="/navbar" element={<NavBar />}/>
             <Route  path="/signup" element={<Signup />}/>
             <Route  path="/login" element={<Login />}/>
+            <Route  path="/profile" element={<Profile />}/>
           </Routes>
           
         </BrowserRouter>

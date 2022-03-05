@@ -1,15 +1,25 @@
-// var express = require('express');
-// var app = express();
-
-import express from 'express';
-import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import mysql from 'mysql' ;
-import * as fs from 'fs';
+var express = require('express');
+var mysql = require('mysql');
+var session = require('express-session');
+// var cookieSession  = require("cookie-session");
+// var cookieParser = require("cookie-parser");
 
 var app = express();
 
-//setting up session
+
+var connection = require('./../dbConnection.js');
+
+
+// import express from 'express';
+// import session from 'express-session';
+// import cookieParser from 'cookie-parser';
+// import mysql from 'mysql' ;
+// import * as fs from 'fs';
+
+// var app = express();
+
+
+app.set("trust proxy", 1);
 app.use(session({
     secret: 'cmpe273-etsy-app',
     resave: false,
@@ -18,29 +28,33 @@ app.use(session({
     activeDuration: 5 * 60 * 100
 }));
 
-app.use(cookieParser());
-
 
 
 // DB connection
-const bufferData = fs.readFileSync('config.json');
-const JSONData = bufferData.toString();
-let constants = JSON.parse(JSONData);
+// const bufferData = fs.readFileSync('config.json');
+// const JSONData = bufferData.toString();
+// let constants = JSON.parse(JSONData);
 
-var connection = mysql.createPool({
-    // connectionLimit: 100,
-    host: constants.DB.host,
-    user: constants.DB.username,
-    password: constants.DB.password,
-    port: constants.DB.port,
-    database: constants.DB.database
-});
+// var connection = mysql.createPool({
+//     // connectionLimit: 100,
+//     host: constants.DB.host,
+//     user: constants.DB.username,
+//     password: constants.DB.password,
+//     port: constants.DB.port,
+//     database: constants.DB.database
+// });
+app.get('/', function(req, res) {
+    console.log(req.session.user);
+    res.end(req.session.user);
+})
 
 app.post('/', function (req, res) {
 
     console.log('Inside login POST');
     console.log('Request Body: ' + req.body.Email);
-
+    if(req.session.user != null) {
+        console.log("inside session");
+    }
     //Query
 
     connection.getConnection(function (err, conn) {
@@ -102,4 +116,4 @@ app.post('/', function (req, res) {
 });
 
 
-export default app;
+module.exports = app;

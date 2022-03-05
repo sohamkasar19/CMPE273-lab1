@@ -1,22 +1,30 @@
-import  express  from 'express';
+var express = require('express');
+var mysql = require('mysql');
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
 var app = express();
 
-import mysql from 'mysql' ;
-import * as fs from 'fs';
+var connection = require('./../dbConnection.js');
+
+// import  express  from 'express';
+// var app = express();
+
+// import mysql from 'mysql' ;
+// import * as fs from 'fs';
 
 
-const bufferData = fs.readFileSync('config.json');
-const JSONData = bufferData.toString();
-let constants = JSON.parse(JSONData);
+// const bufferData = fs.readFileSync('config.json');
+// const JSONData = bufferData.toString();
+// let constants = JSON.parse(JSONData);
 
-var connection = mysql.createPool({
-    // connectionLimit: 100,
-    host: constants.DB.host,
-    user: constants.DB.username,
-    password: constants.DB.password,
-    port: constants.DB.port,
-    database: constants.DB.database
-});
+// var connection = mysql.createPool({
+//     // connectionLimit: 100,
+//     host: constants.DB.host,
+//     user: constants.DB.username,
+//     password: constants.DB.password,
+//     port: constants.DB.port,
+//     database: constants.DB.database
+// });
 
 app.get('/', function (req, res) {
 
@@ -62,4 +70,4 @@ app.get('/', function (req, res) {
 });
 
 
-export default app;
+module.exports = app;

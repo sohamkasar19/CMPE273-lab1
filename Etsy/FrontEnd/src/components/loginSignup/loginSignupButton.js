@@ -47,7 +47,7 @@ function LoginSignupButton() {
         <Modal.Header closeButton>
           <Modal.Title>
             <h4>Create your account </h4>
-            <h6>Registartion is easy.</h6>
+            <h6>Registration is easy.</h6>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

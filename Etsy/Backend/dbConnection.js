@@ -1,9 +1,6 @@
-import mysql from 'mysql' ;
-import * as fs from 'fs';
+var mysql = require('mysql');
 
-const bufferData = fs.readFileSync('config.json');
-const JSONData = bufferData.toString();
-let constants = JSON.parse(JSONData);
+var constants = require('./config.json');
 
 const connection = mysql.createPool({
     // connectionLimit: 100,
@@ -14,7 +11,7 @@ const connection = mysql.createPool({
     database: constants.DB.database
 });
 
-export default connection;
+module.exports = connection;
 
 // var mysql = require('mysql');
 // const connection = mysql.createPool({
