@@ -2,7 +2,7 @@ var express = require('express');
 var mysql = require('mysql');
 var session = require('express-session');
 // var cookieSession  = require("cookie-session");
-// var cookieParser = require("cookie-parser");
+var cookieParser = require("cookie-parser");
 
 var app = express();
 
@@ -18,7 +18,7 @@ var connection = require('./../dbConnection.js');
 
 // var app = express();
 
-
+//setting up session
 app.set("trust proxy", 1);
 app.use(session({
     secret: 'cmpe273-etsy-app',
@@ -90,11 +90,11 @@ app.post('/', function (req, res) {
                     }
                     else {
                         console.log(result);
-                        // res.cookie('cookie', result[0].Firstname, {
-                        //     maxAge: 360000,
-                        //     httpOnly: false,
-                        //     path: '/'
-                        // });
+                        res.cookie('cookie', result[0].Firstname, {
+                            maxAge: 360000,
+                            httpOnly: false,
+                            path: '/'
+                        });
                         // res.cookie('Accounttype', result[0].Accounttype, {
                         //     maxAge: 360000,
                         //     httpOnly: false,
@@ -104,7 +104,7 @@ app.post('/', function (req, res) {
                         // res.writeHead(200, {
                         //     'Content-type': 'text/plain'
                         // })
-                        console.log(req.session);
+                        console.log("From session" +  req.session.user.Email);
                         console.log('Login successful!');
                         res.end('Login successful!');
                     }

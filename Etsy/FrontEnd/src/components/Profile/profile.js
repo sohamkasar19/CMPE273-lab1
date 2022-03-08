@@ -1,14 +1,66 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import NavBar from "../NavBar/NavBar";
 import './profile.css';
+
 export const Profile = () => {
+  const [formValue, setformValue] = React.useState({
+    ProfileId: "",
+    Email: "",
+    Name: "",
+    DOB: "",
+    About: "",
+    Country: "",
+    City: "",
+    Address: "",
+    Gender: "",
+    ProfileImage: "",
+    Phonenumber: ""
+  });
+  useEffect(() => {
+    axios.get('http://localhost:8080/profile').then((response) => {
+      if(response.status === 200) {
+        console.log(response.data);
+        var data = response.data;
+        setformValue({
+          ProfileId: data.ProfileId,
+          Email: data.Email,
+          Name: data.Name,
+          DOB: data.DOB,
+          About: data.About,
+          Country: data.Country,
+          City: data.City,
+          Address: data.Address,
+          Gender: data.Gender,
+          ProfileImage: data.ProfileImage,
+          Phonenumber: data.Phonenumber
+        })
+      }
+    })
+  });
+
+
+  const handleChange = (event) => {
+    if(event.target.name !== 'ProfileImage') {
+      var profilePhoto = event.target.files[0];
+      var data = new FormData();
+      data.append('photos', profilePhoto);
+      axios.post('http://localhost:8080/profile/upload-photo', data);
+    }else {
+      setformValue({
+        ...formValue,
+        [event.target.name]: event.target.value,
+      });
+    }
+  }
   return (
     <div>
       <NavBar>New navigation</NavBar>
-      <Container fluid>
-        <Row className="justify-content-md-center">
-          <Col xs lg="2">
+      {/* <Container fluid> */}
+      <div id="content" class="clear " role="main">
+        {/* <Row className="justify-content-md-center"> */}
+          {/* <Col xs lg="2"> */}
             <div className="grid-child green">
               <div id="content" className="clear " role="main">
                 <link
@@ -31,7 +83,7 @@ export const Profile = () => {
                   href="https://www.etsy.com/dac/your/profile.20210909222603,modules/autosuggest.20210909222603,your-etsy.20220304135846,your/account/settings.20220304135846,modules/forms.20210909222603.css"
                   type="text/css"
                 />
-                <div className="secondary">
+                {/* <div className="secondary">
                   <div
                     className="your-etsy-nav your-etsy-nav-profile is-seller"
                     role="navigation"
@@ -73,11 +125,11 @@ export const Profile = () => {
                       </li>
                     </ul>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
-          </Col>
-          <Col xs lg="6">
+          {/* </Col> */}
+          {/* <Col xs lg="6"> */}
             <div className="container">
               <div className="primary profile-edit">
                 <div className="your-etsy-header clear">
@@ -87,16 +139,14 @@ export const Profile = () => {
                   </p>
                   <a
                     className="view-profile btn-secondary small registration-hidden"
-                    href="https://www.etsy.com/people/v96m1wnuhqdx23sp"
+                    href=""
                   >
                     View Profile
                   </a>
                 </div>
                 <form
                   class="section-inner"
-                  action="/your/profile"
-                  method="post"
-                  enctype="multipart/form-data"
+                  encType="multipart/form-data"
                 >
                   <div class="input-group">
                     <label class="label" for="avatar">
@@ -107,9 +157,10 @@ export const Profile = () => {
                         type="file"
                         class="upload-new-avatar"
                         id="avatar"
-                        name="avatar"
+                        name="ProfileImage"
                         size="15"
                         aria-describedby="changing-avatar-disabled avatar-technical-hint"
+                        onChange={handleChange}
                       />
 
                       <div class="image-wrapper user-avatar-wrapper">
@@ -150,13 +201,14 @@ export const Profile = () => {
                     </p>
                   </div>
                   <hr />
+                  <fieldset>
                   <div
-                    class="input-group gender registration-hidden"
+                    class="gender-class"
                     role="group"
                     aria-labelledby="gender-group-label"
                   >
                     <label class="label" id="gender-group-label">
-                      Gender
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gender
                     </label>
                     {/* <div class="radio-group" id="gender"> */}
                     <label for="female">Female
@@ -186,9 +238,10 @@ export const Profile = () => {
                       />
                     </label>
 
-
+                    
                     {/* </div> */}
                   </div>
+                  </fieldset>
                   <hr class="registration-hidden" />
                   <div class="input-group location-city">
                     <label class="label" for="city3">
@@ -214,9 +267,10 @@ export const Profile = () => {
                 </form>
               </div>
             </div>
-          </Col>
-        </Row>
-      </Container>
+          {/* </Col> */}
+        {/* </Row> */}
+      {/* </Container> */}
+      </div>
     </div>
   );
 };
