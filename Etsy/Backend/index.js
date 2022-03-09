@@ -38,11 +38,23 @@ var app = express();
 app.set("trust proxy", 1);
 app.use(session({
     secret: 'cmpe273-etsy-app',
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
     duration: 60 * 60 * 100,
     activeDuration: 5 * 60 * 100
 }));
+// var sessionMiddleware = session({
+//   resave: true,
+//   saveUninitialized: true,
+//   secret: "cmpe273-etsy-app",
+//   // store: store
+// })
+// app.use(sessionMiddleware);
+
+app.use(function (req, res, next) {
+  req.session.user = "dsadsaasd";
+  next();
+});
 
 //setting up session
 // app.set("trust proxy", 1);
@@ -83,11 +95,10 @@ app.use(bodyParser.json());
 
 
 
-app.use(cookieParser());
 
-app.use("/login", loginRoute);
+app.use("/login",  loginRoute);
 
-app.use("/signup", signupRoute);
+app.use("/signup",  signupRoute);
 
 app.use("/profile", profileRoute);
 

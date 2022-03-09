@@ -16,7 +16,8 @@ const LoginForm = () => {
     }
     axios.post('http://localhost:8080/login', data).then((response) => {
         if (response.status === 200) {
-          console.log()
+          console.log("before local storage: "+response.data);
+          localStorage.setItem("user", JSON.stringify(response.data));
         }
     });
   };
