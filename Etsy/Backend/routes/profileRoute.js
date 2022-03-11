@@ -34,10 +34,7 @@ const jwt = require("jsonwebtoken");
 const storage = multer.diskStorage({
   destination: "./public/uploads/",
   filename: function (req, file, cb) {
-    cb(
-      null,
-      file.originalname
-    );
+    cb(null, file.originalname);
   },
 });
 
@@ -100,49 +97,62 @@ app.get("/download-photo/", (req, res) => {
 
 app.get("/", function (req, res) {
   console.log("Inside profile GET");
-  console.log("Request Body: " + req.body);
+  console.log("Request Body JWT TOKEN: " + req.query.token);
 
-  const token = req.query.token;
-  console.log("Token : " + token);
-  // const decode = jwt.verify(token, process.env.SECRET)
-  // console.log(decode);
-  // console.log("From Session: "+ res.cookie.access_token)
-  //Query
-
-  connection.getConnection(function (err, conn) {
-    if (err) {
-      console.log("Error in creating connection!");
-      res.writeHead(400, {
-        "Content-type": "text/plain",
-      });
-      res.end("Error in creating connection!");
-    } else {
-      //Login validation query
-      console.log("No error");
-      var sql =
-        "SELECT * from userdetails WHERE ProfileId = " + mysql.escape(token);
-      conn.query(sql, function (err, result) {
-        if (err) {
-          console.log("Error in retrieving profile data");
-          res.writeHead(400, {
-            "Content-type": "text/plain",
-          });
-          res.end("Error in retrieving profile data");
-        } else {
-          // console.log(result[0].password);
-          console.log("Profile Data: ", result);
-          res.writeHead(200, {
-            "Content-type": "application/json",
-          });
-          res.end(JSON.stringify(result[0]));
-        }
-      });
+  if (!req.query.token) {
+    console.log("No token");
+    res.writeHead(400, {
+      "Content-type": "text/plain",
+    });
+    res.end("No token");
+  } else {
+    const token = req.query.token;
+    // console.log("Token : " + token);
+    let decode = null;
+    try {
+      decode = jwt.verify(token, process.env.SECRET);
+    } catch (error) {
+      return  res.status(400).send('invalid token')
     }
-  });
+    let ProfileId = decode.id;
+    // console.log("From Session: "+ res.cookie.access_token)
+    //Query
+
+    connection.getConnection(function (err, conn) {
+      if (err) {
+        console.log("Error in creating connection!");
+        res.writeHead(400, {
+          "Content-type": "text/plain",
+        });
+        res.end("Error in creating connection!");
+      } else {
+        //Login validation query
+        console.log("No error");
+        var sql =
+          "SELECT * from userdetails WHERE ProfileId = " + mysql.escape(ProfileId);
+        conn.query(sql, function (err, result) {
+          if (err) {
+            console.log("Error in retrieving profile data");
+            res.writeHead(400, {
+              "Content-type": "text/plain",
+            });
+            res.end("Error in retrieving profile data");
+          } else {
+            // console.log(result[0].password);
+            console.log("Profile Data: ", result);
+            res.writeHead(200, {
+              "Content-type": "application/json",
+            });
+            res.end(JSON.stringify(result[0]));
+          }
+        });
+      }
+    });
+  }
 });
 
 app.post("/", (req, res) => {
-  console.log("Inside profile POST" + req.body);
+  console.log("Inside profile POST");
 
   connection.getConnection((err, conn) => {
     if (err) {
@@ -178,7 +188,7 @@ app.post("/", (req, res) => {
         mysql.escape(req.body.Phonenumber) +
         "WHERE ProfileId = " +
         mysql.escape(req.body.ProfileId);
-     
+
       conn.query(sql, (err, result) => {
         if (err) {
           console.log("Invalid Credentials! 1111" + err);

@@ -114,7 +114,7 @@ app.post('/', function (req, res) {
                         console.log('Login successful!');
                         // res.end('Login successful!');
                         let userdetails = result[0]
-                        return res.json({user:{token,userdetails}});
+                        return res.json({token});
                     }
                 }
             });

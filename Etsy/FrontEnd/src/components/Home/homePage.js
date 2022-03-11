@@ -1,48 +1,71 @@
-// import React, { useState } from "react";
-// import { Button, Modal } from "react-bootstrap";
-// import LoginForm from "../loginSignup/login";
-// import SignupForm from "../loginSignup/signup";
+import axios from "axios";
+import React, { useEffect } from "react";
+import { Card } from "react-bootstrap";
+import NavBar from "../NavBar/NavBar";
 
-function Home() {
-  // const [showLogin, setShowLogin] = useState(false);
-  // const handleCloseLogin = () => setShowLogin(false);
-  // const handleShowLogin = () => setShowLogin(true);
-
-  // const [showSignup, setShowSignup] = useState(false);
-  // const handleCloseSignup = () => setShowSignup(false);
-  // const handleShowSignup = () => {
-  //   setShowLogin(false);
-  //   setShowSignup(true);
-  // }
+const HomePage = () => {
+  let welcomeBoard = (
+    <h1>Explore one-of-a-kind finds from independent makers</h1>
+  );
+  const [formValue, setformValue] = React.useState({
+    ProfileId: "",
+    Name: "",
+  });
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      const local = JSON.parse(localStorage.getItem("user"));
+      const token = local.token;
+      axios
+        .get("http://localhost:8080/profile", {
+          params: {
+            token: token,
+          },
+        })
+        .then((response) => {
+          var data = response.data;
+          setformValue({
+            ProfileId: data.ProfileId,
+            Name: data.Name,
+          });
+        });
+    }
+  }, []);
+  if (localStorage.getItem("user")) {
+    welcomeBoard = (
+      <>
+        Welcome to Etsy,{" "}
+        <a href="/profile">
+          {formValue.Name}
+        </a>
+        !
+      </>
+    );
+  } else {
+    welcomeBoard = <>Explore one-of-a-kind finds from independent makers</>;
+  }
 
   return (
     <>
-      {/* <div>
-        <button onClick={handleShowLogin}>LOGIN</button>
+      <div>
+        <NavBar>New navigation</NavBar>
+
+        <Card
+        style={{
+          "textAlign": "center",
+          background: "#fdebd2",
+          height: "200px",
+        }}
+      >
+        <Card.Body>
+          <Card.Text
+            style={{ "fontSize": "50px", "fontFamily": "Times New Roman" }}
+          >
+            {welcomeBoard}
+          </Card.Text>
+        </Card.Body>
+      </Card>
       </div>
-
-      <Modal show={showLogin} onHide={handleCloseLogin}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login</Modal.Title>
-          <Button variant="primary" type="submit" onClick={handleShowSignup}>
-            Signup
-          </Button>
-        </Modal.Header>
-        <Modal.Body>
-          <LoginForm />
-        </Modal.Body>
-      </Modal>
-
-      <Modal show={showSignup} onHide={handleCloseSignup}>
-        <Modal.Header closeButton>
-          <Modal.Title>Signup</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <SignupForm />
-        </Modal.Body>
-      </Modal> */}
     </>
   );
-}
-// render(<Home />);
-export default Home;
+};
+export default HomePage;

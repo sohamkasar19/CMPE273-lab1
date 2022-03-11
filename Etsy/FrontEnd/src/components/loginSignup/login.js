@@ -1,9 +1,11 @@
 import React from "react";
 import { Form, Button } from "react-bootstrap";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [formValue, setformValue] = React.useState({
     email: "",
     password: "",
@@ -16,8 +18,10 @@ const LoginForm = () => {
     }
     axios.post('http://localhost:8080/login', data).then((response) => {
         if (response.status === 200) {
-          console.log("before local storage: "+response.data);
+          console.log("before local storage: "+JSON.stringify(response.data));
           localStorage.setItem("user", JSON.stringify(response.data));
+          window.location.reload(false);
+          // navigate('/home');
         }
     });
   };
@@ -28,6 +32,7 @@ const LoginForm = () => {
       [event.target.name]: event.target.value,
     });
   };
+  
 
   return (
     <Form>

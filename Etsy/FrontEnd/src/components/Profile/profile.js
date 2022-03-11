@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import NavBar from "../NavBar/NavBar";
 import "./profile.css";
-import ProfileNameButton from "./profileNameButton";
 
 export const Profile = () => {
   const [formValue, setformValue] = React.useState({
@@ -22,9 +21,8 @@ export const Profile = () => {
 
   useEffect(() => {
     const local = JSON.parse(localStorage.getItem("user"));
-    const token = local.user.userdetails.ProfileId;
+    const token = local.token;
     // const token = local["user"];
-    console.log("Inside useEffect profile" + local.user.token);
     axios
       .get("http://localhost:8080/profile", {
         params: {
@@ -33,39 +31,59 @@ export const Profile = () => {
       })
       .then((response) => {
         if (response.status === 200) {
-          console.log("Inside useEffect profile" + response.data);
+          console.log(
+            "Inside useEffect profile" + JSON.stringify(response.data)
+          );
           var data = response.data;
-          setformValue({
-            ...formValue,
-            ProfileId: data.ProfileId,
-            Email: data.Email,
-            Name: data.Name,
-            DOB: data.DOB,
-            About: data.About,
-            Country: data.Country,
-            City: data.City,
-            Address: data.Address,
-            Gender: data.Gender,
-            ProfileImage: data.ProfileImage,
-            Phonenumber: data.Phonenumber,
+          setTimeout(async () => {
+            setformValue({
+              // ...formValue,
+              ProfileId: data.ProfileId,
+              Email: data.Email,
+              Name: data.Name,
+              DOB: data.DOB.split('T')[0],
+              About: data.About,
+              Country: data.Country,
+              City: data.City,
+              Address: data.Address,
+              Gender: data.Gender,
+              ProfileImage: data.ProfileImage,
+              Phonenumber: data.Phonenumber,
+            });
           });
+
+          console.log("Inside formValue: " + formValue.DOB);
+          console.log("Profile Photo Name: ", formValue.ProfileImage);
+          axios
+            .get("http://localhost:8080/profile/download-photo/", {
+              params: {
+                file: data.ProfileImage,
+              },
+            })
+            .then((response) => {
+              let imagePreview = "data:image/jpg;base64, " + response.data;
+              // setTimeout(() => {
+              setformValue({
+                ProfileId: data.ProfileId,
+                Email: data.Email,
+                Name: data.Name,
+                DOB: data.DOB,
+                About: data.About,
+                Country: data.Country,
+                City: data.City,
+                Address: data.Address,
+                Gender: data.Gender,
+                ProfileImage: data.ProfileImage,
+                Phonenumber: data.Phonenumber,
+                ProfileImagePreview: imagePreview,
+              });
+              // });
+              // console.log("preview: " + formValue.ProfileImagePreview);
+            });
         }
-        console.log("Profile Photo Name: ", data.ProfileImage);
+        
 
         //Download image
-        axios
-          .get("http://localhost:8080/profile/download-photo/", {
-            params: {
-              file: data.ProfileImage,
-            },
-          })
-          .then((response) => {
-            let imagePreview = "data:image/jpg;base64, " + response.data;
-            setformValue({
-              ProfileImagePreview: imagePreview,
-            });
-            // console.log("preview: " + formValue.ProfileImagePreview);
-          });
       });
   }, []);
 
@@ -80,10 +98,13 @@ export const Profile = () => {
         [event.target.name]: profilePhoto.name,
       });
     } else {
-      setformValue({
-        ...formValue,
-        [event.target.name]: event.target.value,
-      });
+      
+        setformValue({
+          ...formValue,
+          [event.target.name]: event.target.value,
+        });
+      
+        
     }
   };
 
@@ -114,7 +135,7 @@ export const Profile = () => {
       src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
       // src={formValue.ProfileImagePreview}
       alt=""
-      class="img-fluid rounded-circle"
+      className="img-fluid rounded-circle"
     />
   );
   if (formValue.ProfileImagePreview) {
@@ -124,7 +145,7 @@ export const Profile = () => {
         // src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
         src={formValue.ProfileImagePreview}
         alt=""
-        class="img-fluid rounded-circle"
+        className="img-fluid rounded-circle"
       />
     );
   }
@@ -133,7 +154,7 @@ export const Profile = () => {
     <div>
       <NavBar>New navigation</NavBar>
       {/* <Container fluid> */}
-      <div id="content" class="clear " role="main">
+      <div id="content" className="clear " role="main">
         {/* <Row className="justify-content-md-center"> */}
         {/* <Col xs lg="2"> */}
         <div className="grid-child green">
@@ -168,20 +189,20 @@ export const Profile = () => {
               <p>Everything on this page can be seen by anyone</p>
               <a
                 className="view-profile btn-secondary small registration-hidden"
-                href=""
+                href="/profile"
               >
                 View Profile
               </a>
             </div>
-            <form class="section-inner" encType="multipart/form-data">
-              <div class="input-group">
-                <label class="label" for="avatar">
+            <form className="section-inner" encType="multipart/form-data">
+              <div className="input-group">
+                <label className="label" htmlFor="avatar">
                   Profile Picture
                 </label>
-                <div class="change-avatar-content">
+                <div className="change-avatar-content">
                   <input
                     type="file"
-                    class="upload-new-avatar"
+                    className="upload-new-avatar"
                     id="avatar"
                     name="ProfileImage"
                     size="15"
@@ -189,28 +210,29 @@ export const Profile = () => {
                     onChange={handleChange}
                   />
 
-                  <div class="image-wrapper user-avatar-wrapper">
+                  <div className="image-wrapper user-avatar-wrapper">
                     {profileImageData}
                   </div>
                 </div>
 
-                <span class="inline-message" id="avatar-technical-hint">
+                <span className="inline-message" id="avatar-technical-hint">
                   Must be a .jpg, .gif or .png file smaller than 10MB and at
                   least 400px by 400px.
                 </span>
               </div>
               <hr />
               <div
-                class="input-group"
+                className="input-group"
                 id="name"
                 role="group"
                 aria-labelledby="your-name-label"
               >
-                <label class="label" id="your-name-label">
+                <label className="label" id="your-name-label">
                   Your Name
                 </label>
-                <p class="full-name" id="full-name">
-                  <div>
+                <p className="full-name" id="full-name">
+                  {/* <div>
+                    {formValue.Name}
                   <ProfileNameButton />
                   </div>
                   <a
@@ -220,87 +242,96 @@ export const Profile = () => {
                     aria-describedby="your-name-label"
                   >
                     Change or remove
-                  </a>
-                </p>
-              </div>
-              <hr />
-              <div class="input-group location-city">
-                <label class="label" for="Email">
-                  Email
-                </label>
-                <div class="autosuggest-wrapper">
+                  </a> */}
                   <input
                     aria-describedby="the_reason"
                     type="text"
-                    autocomplete="off"
+                    autoComplete="off"
+                    name="Name"
+                    id="Name"
+                    value={formValue.Name ?? ""}
+                    onChange={handleChange}
+                  />
+                </p>
+              </div>
+              <hr />
+              <div className="input-group location-city">
+                <label className="label" htmlFor="Email">
+                  Email
+                </label>
+                <div className="autosuggest-wrapper">
+                  <input
+                    aria-describedby="the_reason"
+                    type="email"
+                    autoComplete="off"
                     name="Email"
                     id="Email"
-                    value={formValue.Email}
+                    value={formValue.Email ?? ""}
                     onChange={handleChange}
                   />
                 </div>
               </div>
               <hr />
-              <div class="input-group location-city">
-                <label class="label" for="Phonenumber">
+              <div className="input-group location-city">
+                <label className="label" htmlFor="Phonenumber">
                   Phone Number
                 </label>
-                <div class="autosuggest-wrapper">
+                <div className="autosuggest-wrapper">
                   <input
                     aria-describedby="the_reason"
                     type="number"
-                    autocomplete="off"
+                    autoComplete="off"
                     name="Phonenumber"
                     id="Phonenumber"
-                    value={formValue.Phonenumber}
+                    value={formValue.Phonenumber ?? ""}
                     onChange={handleChange}
-                    class="text"
+                    className="text"
                   />
                 </div>
               </div>
               <hr />
               <fieldset>
                 <div
-                  class="gender-class"
+                  className="gender-class"
                   role="group"
                   aria-labelledby="gender-group-label"
                 >
-                  <label class="label" id="gender-group-label">
+                  <label className="label" id="gender-group-label">
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     Gender
                   </label>
                   {/* <div class="radio-group" id="gender"> */}
-                  <label for="female">
+                  <label htmlFor="female">
                     Female
                     <input
                       type="radio"
                       value="female"
-                      name="gender"
+                      name="Gender"
                       id="female"
-                      // checked={formValue.Gender === "female"}
+                      checked={formValue.Gender === "female"}
                       onChange={handleChange}
                     />
                   </label>
-                  <label for="male">
+                  <label htmlFor="male">
                     Male
                     <input
                       type="radio"
                       value="male"
-                      name="gender"
+                      name="Gender"
                       id="male"
-                      // checked={formValue.Gender === "male"}
+                      checked={formValue.Gender === "male"}
                       onChange={handleChange}
                     />
                   </label>
 
-                  <label for="private">
+                  <label htmlFor="private">
                     Rather not say
                     <input
                       type="radio"
                       value="private"
-                      name="gender"
+                      name="Gender"
                       id="private"
-                      // checked={formValue.Gender === "Rather not say"}
+                      checked={formValue.Gender === "Rather not say"}
                       onChange={handleChange}
                     />
                   </label>
@@ -309,79 +340,79 @@ export const Profile = () => {
                 </div>
               </fieldset>
               <hr />
-              <div class="input-group location-city">
-                <label class="label" for="DOB">
+              <div className="input-group location-city">
+                <label className="label" htmlFor="DOB">
                   Date of Birth
                 </label>
-                <div class="autosuggest-wrapper">
+                <div className="autosuggest-wrapper">
                   <input
                     aria-describedby="the_reason"
                     type="date"
-                    autocomplete="off"
+                    autoComplete="off"
                     name="DOB"
                     id="DOB"
-                    value={formValue.DOB}
+                    value={formValue.DOB ?? ""}
                     onChange={handleChange}
                   />
                 </div>
               </div>
               <hr />
-              <div class="input-group location-city">
-                <label class="label" for="Country">
+              <div className="input-group location-city">
+                <label className="label" htmlFor="Country">
                   Address
                 </label>
-                <div class="autosuggest-wrapper">
+                <div className="autosuggest-wrapper">
                   <input
                     aria-describedby="the_reason"
                     type="text"
-                    autocomplete="off"
+                    autoComplete="off"
                     name="Address"
                     id="Address"
-                    value={formValue.Address}
+                    value={formValue.Address ?? ""}
                     onChange={handleChange}
-                    class="text"
+                    className="text"
                   />
                 </div>
               </div>
-              <hr class="registration-hidden" />
-              <div class="input-group location-city">
-                <label class="label" for="city3">
+              <hr className="registration-hidden" />
+              <div className="input-group location-city">
+                <label className="label" htmlFor="city3">
                   City
                 </label>
-                <div class="autosuggest-wrapper">
+                <div className="autosuggest-wrapper">
                   <input
                     aria-describedby="the_reason"
                     type="text"
-                    autocomplete="off"
+                    autoComplete="off"
                     name="City"
                     id="City"
-                    value={formValue.City}
+                    value={formValue.City ?? ""}
                     onChange={handleChange}
-                    class="text"
+                    className="text"
                   />
                 </div>
               </div>
               <hr />
-              <div class="input-group location-city">
-                <label class="label" for="Country">
+              <div className="input-group location-city">
+                <label className="label" htmlFor="Country">
                   Country
                 </label>
-                <div class="autosuggest-wrapper">
+                <div className="autosuggest-wrapper">
                   <input
                     aria-describedby="the_reason"
                     type="text"
-                    autocomplete="off"
+                    autoComplete="off"
                     name="Country"
                     id="Country"
-                    value={formValue.Country}
+                    value={formValue.Country ?? ""}
                     onChange={handleChange}
-                    class="text"
+                    className="text"
                   />
                 </div>
               </div>
-              <div class="submit">
+              <div className="submit">
                 <input
-                  class="btn-primary"
+                  className="btn-primary"
                   type="submit"
                   value="Save Changes"
                   onClick={handleSubmit}
