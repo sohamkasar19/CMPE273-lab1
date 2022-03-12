@@ -8,10 +8,12 @@ import {
   FormControl,
   Dropdown,
 } from "react-bootstrap";
+import { useNavigate } from "react-router";
 import LoginSignupButton from "../loginSignup/loginSignupButton";
 import LogoutButton from "../loginSignup/logoutButton";
 
 function NavBar() {
+  let navigate = useNavigate();
   let LoginLogOutButton = null;
   let Favourite = null;
   if (localStorage.getItem("user")) {
@@ -70,11 +72,12 @@ function NavBar() {
   }
   else {
     
-      console.log("Not able to read cookie");
+      navigate("/home")
       LoginLogOutButton = 
       <Nav.Link className="border-left pl-2 ms-auto" href="">
         <LoginSignupButton />
       </Nav.Link>
+      
     
   }
   return (

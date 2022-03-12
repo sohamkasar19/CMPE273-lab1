@@ -9,6 +9,7 @@ var cookieParser = require("cookie-parser");
 var loginRoute = require("./routes/loginRoute.js");
 var signupRoute = require("./routes/signupRoute.js");
 var profileRoute = require("./routes/profileRoute.js");
+var imageDownloadRoute = require("./routes/imageDownloadRoute.js")
 
 var connection = require("./dbConnection.js");
 var constants = require("./config.json");
@@ -101,6 +102,8 @@ app.use("/login",  loginRoute);
 app.use("/signup",  signupRoute);
 
 app.use("/profile", profileRoute);
+
+// app.use("/image-download", imageDownloadRoute);
 
 app.get("/", (req, res) => {
   console.log("TEST");

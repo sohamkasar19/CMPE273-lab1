@@ -63,7 +63,7 @@ function checkFileType(file, cb) {
 }
 
 //uploading photo
-app.post("/upload-photo", upload.array("photos", 5), (req, res) => {
+app.post("/upload-photo", upload.single("photos"), (req, res) => {
   console.log("req.body", req.body);
   res.end();
 });
@@ -197,7 +197,7 @@ app.post("/", (req, res) => {
           });
           res.end("Invalid Credentials!");
         } else {
-          console.log("SignedUp");
+          console.log("Profile POST done");
         }
       });
     }

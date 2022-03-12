@@ -1,9 +1,11 @@
 import axios from "axios";
 import React, { useEffect } from "react";
+// import { useNavigate } from "react-router";
 import NavBar from "../NavBar/NavBar";
 import "./profile.css";
 
 export const Profile = () => {
+  // let navigate = useNavigate();
   const [formValue, setformValue] = React.useState({
     ProfileId: "",
     Email: "",
@@ -22,70 +24,129 @@ export const Profile = () => {
   useEffect(() => {
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
-    // const token = local["user"];
-    axios
-      .get("http://localhost:8080/profile", {
-        params: {
-          token: token,
-        },
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          console.log(
-            "Inside useEffect profile" + JSON.stringify(response.data)
-          );
-          var data = response.data;
-          setTimeout(async () => {
-            setformValue({
-              // ...formValue,
-              ProfileId: data.ProfileId,
-              Email: data.Email,
-              Name: data.Name,
-              DOB: data.DOB.split('T')[0],
-              About: data.About,
-              Country: data.Country,
-              City: data.City,
-              Address: data.Address,
-              Gender: data.Gender,
-              ProfileImage: data.ProfileImage,
-              Phonenumber: data.Phonenumber,
-            });
-          });
+    let isSubscribed = true;
+    let userdetails = null;
+    let imagePreview = undefined;
+    const getUserDetails = async () => {
+      await axios
+        .get("http://localhost:8080/profile", {
+          params: {
+            token: token,
+          },
+        })
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            console.log("inside then");
+            userdetails = response.data;
+            console.log(JSON.stringify(userdetails));
+          }
+        }).catch((err) => {
+          console.log(err);
+        });
+      await axios
+        .get("http://localhost:8080/profile/download-photo/", {
+          params: {
+            file: userdetails.ProfileImage,
+          },
+        })
+        .then((response) => {
+          imagePreview = "data:image/jpg;base64, " + response.data;
+        });
 
-          console.log("Inside formValue: " + formValue.DOB);
-          console.log("Profile Photo Name: ", formValue.ProfileImage);
-          axios
-            .get("http://localhost:8080/profile/download-photo/", {
-              params: {
-                file: data.ProfileImage,
-              },
-            })
-            .then((response) => {
-              let imagePreview = "data:image/jpg;base64, " + response.data;
-              // setTimeout(() => {
-              setformValue({
-                ProfileId: data.ProfileId,
-                Email: data.Email,
-                Name: data.Name,
-                DOB: data.DOB,
-                About: data.About,
-                Country: data.Country,
-                City: data.City,
-                Address: data.Address,
-                Gender: data.Gender,
-                ProfileImage: data.ProfileImage,
-                Phonenumber: data.Phonenumber,
-                ProfileImagePreview: imagePreview,
-              });
-              // });
-              // console.log("preview: " + formValue.ProfileImagePreview);
-            });
-        }
-        
-
-        //Download image
-      });
+      console.log("inside settimeout");
+      if (isSubscribed) {
+        setformValue({
+          ProfileId: userdetails.ProfileId,
+          Email: userdetails.Email,
+          Name: userdetails.Name,
+          DOB: userdetails.DOB,
+          About: userdetails.About,
+          Country: userdetails.Country,
+          City: userdetails.City,
+          Address: userdetails.Address,
+          Gender: userdetails.Gender,
+          ProfileImage: userdetails.ProfileImage,
+          Phonenumber: userdetails.Phonenumber,
+          ProfileImagePreview: imagePreview,
+        });
+      }
+    };
+    getUserDetails().catch(console.error);
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
+
+  // useEffect(() => {
+  //   const local = JSON.parse(localStorage.getItem("user"));
+  //   const token = local.token;
+  //   // const token = local["user"];
+  //   // if(!localStorage.getItem("user")) {
+  //   //   navigate("/");
+  //   // }
+  //   axios
+  //     .get("http://localhost:8080/profile", {
+  //       params: {
+  //         token: token,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       if (response.status === 200) {
+  //         console.log(
+  //           "Inside useEffect profile" + JSON.stringify(response.data)
+  //         );
+  //         var data = response.data;
+  //         setTimeout(async () => {
+  //           setformValue({
+  //             // ...formValue,
+  //             ProfileId: data.ProfileId,
+  //             Email: data.Email,
+  //             Name: data.Name,
+  //             DOB: data.DOB.split('T')[0],
+  //             About: data.About,
+  //             Country: data.Country,
+  //             City: data.City,
+  //             Address: data.Address,
+  //             Gender: data.Gender,
+  //             ProfileImage: data.ProfileImage,
+  //             Phonenumber: data.Phonenumber,
+  //           });
+  //         });
+
+  //         console.log("Inside formValue: " + formValue.DOB);
+  //         console.log("Profile Photo Name: ", formValue.ProfileImage);
+  //         axios
+  //           .get("http://localhost:8080/profile/download-photo/", {
+  //             params: {
+  //               file: data.ProfileImage,
+  //             },
+  //           })
+  //           .then((response) => {
+  //             let imagePreview = "data:image/jpg;base64, " + response.data;
+  //             // setTimeout(() => {
+  //             setformValue({
+  //               ProfileId: data.ProfileId,
+  //               Email: data.Email,
+  //               Name: data.Name,
+  //               DOB: data.DOB,
+  //               About: data.About,
+  //               Country: data.Country,
+  //               City: data.City,
+  //               Address: data.Address,
+  //               Gender: data.Gender,
+  //               ProfileImage: data.ProfileImage,
+  //               Phonenumber: data.Phonenumber,
+  //               ProfileImagePreview: imagePreview,
+  //             });
+  //             // });
+  //             // console.log("preview: " + formValue.ProfileImagePreview);
+  //           });
+  //       }
+
+  //       //Download image
+  //     });
+  // }, []);
 
   const handleChange = (event) => {
     if (event.target.name === "ProfileImage") {
@@ -98,13 +159,10 @@ export const Profile = () => {
         [event.target.name]: profilePhoto.name,
       });
     } else {
-      
-        setformValue({
-          ...formValue,
-          [event.target.name]: event.target.value,
-        });
-      
-        
+      setformValue({
+        ...formValue,
+        [event.target.name]: event.target.value,
+      });
     }
   };
 
