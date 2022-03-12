@@ -85,14 +85,16 @@ app.get("/download-photo/", (req, res) => {
   console.log("Inside Download File" + req.query.file);
   var file = req.query.file;
 
+  var filetype = file.split(".").pop();
+
   var filelocation = path.join(__dirname + "/../public/uploads", file);
   var img = fs.readFileSync(filelocation);
   var base64img = new Buffer(img).toString("base64");
   res.writeHead(200, {
-    "Content--type": "image/jpg",
+    "Content--type": "image/"+filetype,
   });
   // console.log(base64img);
-  res.end(base64img);
+  res.end("data:image/"+filetype+";base64,"+base64img);
 });
 
 app.get("/", function (req, res) {

@@ -13,9 +13,10 @@ import {
   ImageListItem,
   ImageListItemBar,
 } from "@mui/material";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 const HomePage = () => {
+  let itemData = [];
   let welcomeBoard = (
     <h1>Explore one-of-a-kind finds from independent makers</h1>
   );
@@ -33,10 +34,10 @@ const HomePage = () => {
     currencySymbol = <CurrencyRupeeIcon />;
   }
   useEffect(() => {
-    if (localStorage.getItem("user")) {
+    const fetchUserData = async () => {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
-      axios
+      await axios
         .get("http://localhost:8080/profile", {
           params: {
             token: token,
@@ -49,7 +50,28 @@ const HomePage = () => {
             Name: data.Name,
           });
         });
+    };
+    const fetchItemImages = async () => {
+      await axios
+        .get("http://localhost:8080/item/all-images")
+        .then((response) => {
+          console.log("axios get all" + response.data);
+          for (let item of response.data) {
+            itemData.push(item);
+          }
+          console.log(itemData);
+          localStorage.setItem("item-images", JSON.stringify(itemData));
+          window.location.reload(false);
+          // console.log(itemData);
+        });
+    };
+    if (localStorage.getItem("user")) {
+      fetchUserData();
     }
+    if(!localStorage.getItem("item-images")) {
+      fetchItemImages();
+    }
+    
   }, []);
   if (localStorage.getItem("user")) {
     welcomeBoard = (
@@ -60,68 +82,99 @@ const HomePage = () => {
   } else {
     welcomeBoard = <>Explore one-of-a-kind finds from independent makers</>;
   }
-  const itemData = [
-    {
-      img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
-      title: "Breakfast",
-      author: "@bkristastucchio",
-      rows: 2,
-      cols: 2,
-      featured: true,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
-      title: "Burger",
-      author: "@rollelflex_graphy726",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
-      title: "Camera",
-      author: "@helloimnik",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
-      title: "Coffee",
-      author: "@nolanissac",
-      cols: 2,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1533827432537-70133748f5c8",
-      title: "Hats",
-      author: "@hjrc33",
-      cols: 2,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62",
-      title: "Honey",
-      author: "@arwinneil",
-      rows: 2,
-      cols: 2,
-      featured: true,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6",
-      title: "Basketball",
-      author: "@tjdragotta",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1518756131217-31eb79b20e8f",
-      title: "Fern",
-      author: "@katie_wasserman",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1597645587822-e99fa5d45d25",
-      title: "Mushrooms",
-      author: "@silverdalex",
 
-    },
-    {
-      img: "https://images.unsplash.com/photo-1567306301408-9b74779a11af",
-      title: "Tomato basil",
-      author: "@shelleypauls",
-    },
-    
-  ];
+  let itemImageData = (
+    <>Loading Images</>
+  )
+  if(localStorage.getItem("item-images")) {
+    itemData = localStorage.getItem("item-images");
+    itemData = JSON.parse(itemData);
+    // console.log( JSON.parse(itemData));
+    itemImageData = itemData.map((item) => (
+      <ImageListItem >
+        <img
+          src={item.ItemImage}
+          // src={`${"data:image/png;base64,"+item.ItemImage}?w=248&fit=crop&auto=format`}
+          // srcSet={`${"data:image/png;base64,"+item.ItemImage}?w=248&fit=crop&auto=format&dpr=2 2x`}
+          alt={item.ItemName}
+          // loading="lazy"
+        />
+        <ImageListItemBar
+          title={item.ItemName}
+          actionIcon={
+            <IconButton
+              sx={{ color: "rgba(255, 255, 255, 0.54)" }}
+              aria-label={`info about ${item.title}`}
+            >
+              <FavoriteBorderIcon />
+            </IconButton>
+          }
+        />
+      </ImageListItem>
+    ))
+  }
+  //  itemData = [
+  //   {
+  //     img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
+  //     title: "Breakfast",
+  //     author: "@bkristastucchio",
+  //     rows: 2,
+  //     cols: 2,
+  //     featured: true,
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
+  //     title: "Burger",
+  //     author: "@rollelflex_graphy726",
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
+  //     title: "Camera",
+  //     author: "@helloimnik",
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
+  //     title: "Coffee",
+  //     author: "@nolanissac",
+  //     cols: 2,
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1533827432537-70133748f5c8",
+  //     title: "Hats",
+  //     author: "@hjrc33",
+  //     cols: 2,
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62",
+  //     title: "Honey",
+  //     author: "@arwinneil",
+  //     rows: 2,
+  //     cols: 2,
+  //     featured: true,
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6",
+  //     title: "Basketball",
+  //     author: "@tjdragotta",
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1518756131217-31eb79b20e8f",
+  //     title: "Fern",
+  //     author: "@katie_wasserman",
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1597645587822-e99fa5d45d25",
+  //     title: "Mushrooms",
+  //     author: "@silverdalex",
+
+  //   },
+  //   {
+  //     img: "https://images.unsplash.com/photo-1567306301408-9b74779a11af",
+  //     title: "Tomato basil",
+  //     author: "@shelleypauls",
+  //   },
+
+  // ];
   return (
     <>
       <div>
@@ -143,15 +196,16 @@ const HomePage = () => {
               </Card.Text>
             </Card.Body>
           </Card>
-          <ImageList >
-            <ImageListItem key="Subheader" cols={4}>
-            </ImageListItem>
-            {itemData.map((item) => (
-              <ImageListItem key={item.img}>
+          <ImageList>
+            <ImageListItem key="Subheader" cols={4}></ImageListItem>
+            {itemImageData}
+            {/* {itemData.map((item) => (
+              <ImageListItem >
                 <img
+                  // src={item.ItemImage}
                   src={`${item.img}?w=248&fit=crop&auto=format`}
                   srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                  alt={item.title}
+                  alt={item.ItemName}
                   loading="lazy"
                 />
                 <ImageListItemBar
@@ -166,7 +220,7 @@ const HomePage = () => {
                   }
                 />
               </ImageListItem>
-            ))}
+            ))} */}
           </ImageList>
           {currencySymbol}
           {currencyvalue}

@@ -51,7 +51,8 @@ export const Profile = () => {
           },
         })
         .then((response) => {
-          imagePreview = "data:image/jpg;base64, " + response.data;
+            imagePreview = response.data;
+          // imagePreview = "data:image/jpg;base64, " + response.data;
         });
 
       console.log("inside settimeout");
