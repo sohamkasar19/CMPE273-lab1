@@ -55,7 +55,6 @@ export const Profile = () => {
           // imagePreview = "data:image/jpg;base64, " + response.data;
         });
 
-      console.log("inside settimeout");
       if (isSubscribed) {
         setformValue({
           ProfileId: userdetails.ProfileId,
