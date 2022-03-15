@@ -4,7 +4,7 @@ import NavBar from "../NavBar/NavBar";
 import "../Home/home.css";
 import { useLocation } from "react-router";
 import axios from "axios";
-import { connect, useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../actions/cartActions";
 
 const Item = () => {
@@ -16,6 +16,7 @@ const Item = () => {
   const [itemCount, setItemCount] = useState(1);
 
   const dispatch = useDispatch();
+
 
   // useLayoutEffect(() => {
   //   const fetchItemData = async () => {
@@ -63,7 +64,21 @@ const Item = () => {
   }, [state]);
 
   const handleAddToCart = (event) => {
-    dispatch(addToCart(itemDetails, itemCount));
+    // console.log(itemCount +" "+ itemDetails.QuantityAvailable);
+    // let existed_item = state.addedItems ? state.addedItems.find((item) => item.ItemId === itemDetails.ItemId) : null;
+    // console.log("existing" + existed_item);
+    // let orderCount = itemCount;
+    // if(existed_item) {
+     
+    //   orderCount += existed_item.quantityInCart;
+    // }
+    if (itemCount > itemDetails.QuantityAvailable) {
+      alert("Oops!!! We don't have that much item in stock. Try Again Later!")
+    } else {
+      alert("Added to Cart");
+      dispatch(addToCart(itemDetails, itemCount));
+    }
+
     // markComplete(itemDetails, itemCount);
   };
 
@@ -84,20 +99,18 @@ const Item = () => {
                 <aside className="col-md-6">
                   <article className="gallery-wrap">
                     <div className="card img-big-wrap">
-                      <a href="#">
-                        {" "}
-                        <img
-                          src={itemDetails.ItemImage}
-                          alt={itemDetails.ItemName}
-                        />
-                      </a>
+                      {" "}
+                      <img
+                        src={itemDetails.ItemImage}
+                        alt={itemDetails.ItemName}
+                      />
                     </div>
                   </article>
                 </aside>
                 <main className="col-md-6">
                   <article>
-                    <h5>{itemDetails.Category}</h5>
-                    <h3 className="title">{itemDetails.ItemName}</h3>
+                    <p><h6>{itemDetails.Category}</h6>  </p> 
+                    <h2 className="title">{itemDetails.ItemName}</h2> 
 
                     <hr />
 
@@ -125,12 +138,13 @@ const Item = () => {
                       />
                       <br />
                       <br />
-                      <a
+                      <button
                         onClick={handleAddToCart}
                         className="btn btn-primary mr-1"
                       >
                         Add to cart
-                      </a>
+                      </button>
+                      &nbsp;&nbsp;&nbsp; {itemDetails.QuantitySold} sales
                     </div>
                   </article>
                 </main>

@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar/NavBar";
 import Profile from "./components/Profile/profile";
 import HomePage from "./components/Home/homePage";
 import Item from "./components/Item/itemPage";
+import Cart from './components/Cart/cartPage';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/item" element={<Item />} />
+          <Route path="/cart" element={<Cart />} />
         </Routes>
       </BrowserRouter>
     </div>
