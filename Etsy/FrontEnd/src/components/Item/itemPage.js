@@ -4,12 +4,18 @@ import NavBar from "../NavBar/NavBar";
 import "../Home/home.css";
 import { useLocation } from "react-router";
 import axios from "axios";
+import { connect, useDispatch } from "react-redux";
+import { addToCart } from "../actions/cartActions";
 
 const Item = () => {
   // let resObj = {};
   const { state } = useLocation();
 
   const [itemDetails, setItemDetails] = useState({});
+
+  const [itemCount, setItemCount] = useState(1);
+
+  const dispatch = useDispatch();
 
   // useLayoutEffect(() => {
   //   const fetchItemData = async () => {
@@ -48,60 +54,24 @@ const Item = () => {
           }
         });
     };
-    if(isSubscribed) {
-      fetchItemData().catch(console.error)
+    if (isSubscribed) {
+      fetchItemData().catch(console.error);
     }
     return () => {
       isSubscribed = false;
     };
-  }, [state])
+  }, [state]);
 
-  // const [itemDetails, setItemDetails] = useState({
-  //   ItemId: "",
-  //   ItemName: "",
-  //   ItemImage: "",
-  //   Price: "",
-  //   QuantityAvailable: "",
-  //   QuantitySold: "",
-  //   ShopId: "",
-  // });
+  const handleAddToCart = (event) => {
+    dispatch(addToCart(itemDetails, itemCount));
+    // markComplete(itemDetails, itemCount);
+  };
+
+  const handleItemCount = (event) => {
+    setItemCount(event.target.value);
+  };
+
   const [currencyvalue, setcurrencyValue] = useState("USD");
-
-  // useEffect(() => {
-  //   let isSubscribed = true;
-  //   let itemData = null;
-  //   const fetchItemData = async () => {
-  //     await axios
-  //       .get("http://localhost:8080/item/details", {
-  //         params: {
-  //           ItemId: state,
-  //         },
-  //       })
-  //       .then((response) => {
-  //         if (response.status === 200) {
-  //           // console.log(response.data[0]);
-  //           itemData = response.data[0];
-  //           // console.log(itemData);
-  //         }
-  //       });
-  //     if (isSubscribed) {
-  //       setItemDetails({
-  //         ItemId: itemData.ItemId,
-  //         ItemName: itemData.ItemName,
-  //         ItemImage: itemData.ItemImage,
-  //         Price: itemData.Price,
-  //         QuantityAvailable: itemData.QuantityAvailable,
-  //         QuantitySold: itemData.QuantitySold,
-  //         ShopId: itemData.ShopId,
-  //       });
-  //       console.log(itemDetails);
-  //     }
-  //   };
-  //   fetchItemData().catch(console.error);
-  //   return () => {
-  //     isSubscribed = false;
-  //   };
-  // }, []);
 
   return (
     <div className="App">
@@ -114,39 +84,51 @@ const Item = () => {
                 <aside className="col-md-6">
                   <article className="gallery-wrap">
                     <div className="card img-big-wrap">
-                      
                       <a href="#">
                         {" "}
-                        <img src={itemDetails.ItemImage}   alt={itemDetails.ItemName} />
+                        <img
+                          src={itemDetails.ItemImage}
+                          alt={itemDetails.ItemName}
+                        />
                       </a>
                     </div>
                   </article>
                 </aside>
                 <main className="col-md-6">
                   <article>
-                    <h5>
-                      {itemDetails.Category}
-                    </h5>
+                    <h5>{itemDetails.Category}</h5>
                     <h3 className="title">{itemDetails.ItemName}</h3>
-                    
 
                     <hr />
 
                     <div className="mb-3">
                       <h6>Short description</h6>
-                      <p>{itemDetails.description || <>Description goes here</>}</p>
+                      <p>
+                        {itemDetails.description || <>Description goes here</>}
+                      </p>
                     </div>
 
                     <div className="mb-3">
-                      <var className="price h4">${itemDetails.Price}</var> <br />
-                      
+                      <var className="price h4">${itemDetails.Price}</var>{" "}
+                      <br />
                     </div>
 
                     <div className="mb-4">
-                      <a href="#" className="btn btn-primary mr-1">
-                        Buy now
-                      </a>
-                      <a href="#" className="btn btn-light">
+                      <label for="quantity">Quantity: </label>
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        value={itemCount}
+                        min="1"
+                        onChange={handleItemCount}
+                      />
+                      <br />
+                      <br />
+                      <a
+                        onClick={handleAddToCart}
+                        className="btn btn-primary mr-1"
+                      >
                         Add to cart
                       </a>
                     </div>
@@ -164,5 +146,11 @@ const Item = () => {
     </div>
   );
 };
+
+// const mapDispatchToProps = (dispatch) => ({
+//   markComplete: (itemDetails, itemCount) => {
+//     dispatch(addToCart(itemDetails, itemCount));
+//   },
+// });
 
 export default Item;
