@@ -10,6 +10,7 @@ var loginRoute = require("./routes/loginRoute.js");
 var signupRoute = require("./routes/signupRoute.js");
 var profileRoute = require("./routes/profileRoute.js");
 var itemRoute = require("./routes/itemRoute.js")
+var orderRoute = require("./routes/orderRoute.js")
 
 var connection = require("./dbConnection.js");
 var constants = require("./config.json");
@@ -92,10 +93,9 @@ connection.getConnection((err) => {
   console.log("pool created");
 });
 
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
 
-
-
+app.use(bodyParser.json({limit: '50mb'}));
 
 app.use("/login",  loginRoute);
 
@@ -104,6 +104,8 @@ app.use("/signup",  signupRoute);
 app.use("/profile", profileRoute);
 
 app.use("/item", itemRoute);
+
+app.use("/order", orderRoute);
 
 app.get("/", (req, res) => {
   console.log("TEST");

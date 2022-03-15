@@ -8,7 +8,7 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 var connection = require("./../dbConnection.js");
-const { log } = require("console");
+// const { log } = require("console");
 const jwt = require("jsonwebtoken");
 
 // import  express  from 'express';

@@ -4,44 +4,26 @@ import Footer from "../Footer/footer";
 import NavBar from "../NavBar/NavBar";
 import "./cartPage.css";
 import "../Home/home.css";
+import axios from "axios";
 
 const Cart = () => {
+  const local = JSON.parse(localStorage.getItem("user"));
+  const token = local.token;
   const cartDetails = useSelector((state) => state);
   const [currencyvalue, setcurrencyValue] = useState("USD");
   console.log(cartDetails);
-  //   let addedItems = cartDetails.addedItems ? (
-  //     cartDetails.addedItems.map((item) => {
-  //       return (
-  //         <li className="collection-item avatar" key={item.ItemId}>
-  //           <div className="item-img">
-  //             <img src={item.ItemImage} alt={item.ItemImage} className="" />
-  //           </div>
-
-  //           <div className="item-desc">
-  //             <span className="title">{item.ItemName}</span>
-  //             <p>{item.desc}</p>
-  //             <p>
-  //               <b>Price: {item.Price}$</b>
-  //             </p>
-  //             <p>
-  //               <b>Quantity: {item.quantityInCart}</b>
-  //             </p>
-
-  //             <button
-  //               className="waves-effect waves-light btn pink remove"
-  //             //   onClick={() => {
-  //             //     this.handleRemove(item.id);
-  //             //   }}
-  //             >
-  //               Remove
-  //             </button>
-  //           </div>
-  //         </li>
-  //       );
-  //     })
-  //   ) : (
-  //     <p>Nothing.</p>
-  //   );
+  const handleCheckout = (e) => {
+    var data = {
+      addedItems: cartDetails.addedItems,
+      total: cartDetails.total,
+      token: token,
+    };
+    axios.post("http://localhost:8080/order/add", data).then((response) => {
+      if (response.status === 200) {
+        console.log("Axios post done from Checkout");
+      }
+    });
+  };
 
   let addedItems = cartDetails.addedItems ? (
     cartDetails.addedItems.map((item) => {
@@ -95,9 +77,9 @@ const Cart = () => {
                   <span className="value">${cartDetails.total}</span>
                 </li>
                 <li className="totalRow">
-                  <a href="#" className="btn continue">
+                  <button onClick={handleCheckout} className="btn continue">
                     Checkout
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
