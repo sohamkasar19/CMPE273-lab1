@@ -17,26 +17,6 @@ const Item = () => {
 
   const dispatch = useDispatch();
 
-
-  // useLayoutEffect(() => {
-  //   const fetchItemData = async () => {
-  //     await axios
-  //       .get("http://localhost:8080/item/details", {
-  //         params: {
-  //           ItemId: state,
-  //         },
-  //       })
-  //       .then((response) => {
-  //         if (response.status === 200) {
-  //           // console.log(response.data[0]);
-  //           const itemData = response.data;
-  //           setItemDetails(itemData);
-  //           // console.log(itemData);
-  //         }
-  //       });
-  //   };
-  //   fetchItemData();
-  // }, []);
   useEffect(() => {
     let isSubscribed = true;
     const fetchItemData = async () => {

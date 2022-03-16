@@ -3,6 +3,9 @@ var mysql = require("mysql");
 var app = express();
 var uuid = require("uuid");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
+const path = require("path");
+
 require("dotenv").config();
 
 var connection = require("../dbConnection.js");
@@ -17,7 +20,7 @@ app.post("/add", function (req, res) {
   } catch (error) {
     return res.status(400).send("invalid token");
   }
-  let ProfileId = decode.id
+  let ProfileId = decode.id;
   console.log("Inside checkout Post" + ProfileId);
   //   console.log(addedItems[0].ItemId+ " "+total);
   connection.getConnection(function (err, conn) {
@@ -66,86 +69,133 @@ app.post("/add", function (req, res) {
                 });
                 res.end("Error in adding orderdetails data");
               } else {
-                console.log("Order details POST done");
-                res.end("Order details POST done");
+                // console.log("Order details POST done");
+                // res.end("Order details POST done");
+                var sql3 =
+                  "UPDATE itemdetails SET QuantityAvailable = QuantityAvailable - " +
+                  mysql.escape(item.quantityInCart) +
+                  " WHERE ItemID = " +
+                  mysql.escape(item.ItemId) +
+                  ";";
+                  console.log(sql3);
+                conn.query(sql3, function (err, result) {
+                  if (err) {
+                    console.log("Error in adding orderdetails data");
+                    res.writeHead(400, {
+                      "Content-type": "text/plain",
+                    });
+                    res.end("Error in adding orderdetails data");
+                  } else {
+                    console.log("Order details POST done");
+                    res.end("Order details POST done");
+                  }
+                });
               }
             });
           });
         }
       });
-    //   console.log("after orderTableInserted" + orderTableInserted);
-      //   const addItemsToOrderDetails = (OrderId, addedItems) => {
-      // addedItems.map((item) => {
-      //     var sql =
-      //       "INSERT INTO orderdetails(OrderId, ItemId, Quantity) VALUES(" +
-      //       mysql.escape(OrderId) +
-      //       "," +
-      //       mysql.escape(item.ItemId) +
-      //       "," +
-      //       mysql.escape(item.quantityInCart) +
-      //       ");";
-      //       conn.query(sql, function (err, result) {
-      //           if (err) {
-      //             console.log("Error in adding orderdetails data");
-      //             res.writeHead(400, {
-      //               "Content-type": "text/plain",
-      //             });
-      //             res.end("Error in adding orderdetails data");
-      //           } else {
-      //               console.log("Order details POST done");
-      //               res.end("Order details POST done")
-      //           }
-      //         });
-      //   });
-      //   }
     }
   });
 });
 
-// app.get("/details", function (req, res) {
-//   console.log("Inside item  GET");
-//   console.log("Request Body ItemId: " + req.query.ItemId);
-//   const ItemId = req.query.ItemId;
-//   connection.getConnection(function (err, conn) {
-//     if (err) {
-//       console.log("Error in creating connection!");
-//       res.writeHead(400, {
-//         "Content-type": "text/plain",
-//       });
-//       res.end("Error in creating connection!");
-//     } else {
-//       //Login validation query
+app.get("/all-orders", function (req, res) {
+  console.log("Inside all order details  GET");
+  //   console.log("Request Body ItemId: " + req.query.ItemId);
+  const token = req.query.token;
+  console.log(token);
+  let decode = null;
+  try {
+    decode = jwt.verify(token, process.env.SECRET);
+  } catch (error) {
+    return res.status(400).send("invalid token");
+  }
+  let ProfileId = decode.id;
 
-//       var sql =
-//         "SELECT * from itemdetails WHERE ItemId = " + mysql.escape(ItemId);
-//       conn.query(sql, function (err, result) {
-//         if (err) {
-//           console.log("Error in retrieving single item data");
-//           res.writeHead(400, {
-//             "Content-type": "text/plain",
-//           });
-//           res.end("Error in retrieving single item data");
-//         } else {
-//           // console.log(result[0].password);
-//           //   console.log("Items Data: ", result);
-//           res.writeHead(200, {
-//             "Content-type": "application/json",
-//           });
-//           for (const [key, item] of Object.entries(result)) {
-//             var file = item.ItemImage;
-//             var filetype = file.split(".").pop();
-//             console.log(file);
-//             var filelocation = path.join(__dirname + "/../public/items", file);
-//             var img = fs.readFileSync(filelocation);
-//             var base64img = new Buffer(img).toString("base64");
-//             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
-//           }
-//           //   console.log(result);
-//           res.end(JSON.stringify(result));
-//         }
-//       });
-//     }
-//   });
-// });
+  console.log("Inside all order details  GET" + ProfileId);
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+
+      var sql =
+        "SELECT * FROM ordertable  WHERE  ProfileId = " +
+        mysql.escape(ProfileId);
+      //   console.log(sql);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in retrieving from orderTable ");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in retrieving from orderTable ");
+        } else {
+          // console.log(result[0].password);
+          //   console.log("Items Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          //   console.log(result);
+          res.end(JSON.stringify(result));
+        }
+      });
+    }
+  });
+});
+
+app.get("/details", function (req, res) {
+  console.log("Inside  order details  GET");
+  //   console.log("Request Body ItemId: " + req.query.ItemId);
+  const OrderId = req.query.OrderId;
+  // console.log(token);
+
+  // console.log("Inside order details  GET" + ProfileId);
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+      var sql =
+        "SELECT * FROM orderdetails INNER JOIN itemdetails ON orderdetails.ItemId = itemdetails.ItemId  WHERE  OrderId = " +
+        mysql.escape(OrderId);
+      //   console.log(sql);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in retrieving from orderTable ");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in retrieving from orderTable ");
+        } else {
+          // console.log(result[0].password);
+          //   console.log("Items Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          //   console.log(result);
+          for (const [key, item] of Object.entries(result)) {
+            var file = item.ItemImage;
+            var filetype = file.split(".").pop();
+            console.log(file);
+            var filelocation = path.join(__dirname + "/../public/items", file);
+            var img = fs.readFileSync(filelocation);
+            var base64img = new Buffer(img).toString("base64");
+            item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
+          }
+          res.end(JSON.stringify(result));
+        }
+      });
+    }
+  });
+});
 
 module.exports = app;

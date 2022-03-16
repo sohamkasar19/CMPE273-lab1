@@ -1,4 +1,4 @@
-import { ADD_TO_CART, REMOVE_ITEM } from "../actions/action-types/cart-actions";
+import { ADD_TO_CART, CHECKOUT_CART } from "../actions/action-types/cart-actions";
 
 const initState = {
   addedItems: [],
@@ -38,19 +38,26 @@ const cartReducer = (state = initState, action) => {
     }
     
   }
-  if (action.type === REMOVE_ITEM) {
-    let itemToRemove = state.addedItems.find((item) => action.id === item.id);
-    let new_items = state.addedItems.filter((item) => action.id !== item.id);
-
-    //calculating the total
-    let newTotal = state.total - itemToRemove.price * itemToRemove.quantity;
-    
+  if(action.type === CHECKOUT_CART) {
     return {
-      ...state,
-      addedItems: new_items,
-      total: newTotal,
-    };
-  } 
+      addedItems: [],
+      total: 0,
+    }
+  }
+
+  // if (action.type === REMOVE_ITEM) {
+  //   let itemToRemove = state.addedItems.find((item) => action.id === item.id);
+  //   let new_items = state.addedItems.filter((item) => action.id !== item.id);
+
+  //   //calculating the total
+  //   let newTotal = state.total - itemToRemove.price * itemToRemove.quantity;
+    
+  //   return {
+  //     ...state,
+  //     addedItems: new_items,
+  //     total: newTotal,
+  //   };
+  // } 
   else {
     return state;
   }

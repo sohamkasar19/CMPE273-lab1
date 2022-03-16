@@ -1,31 +1,43 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Footer from "../Footer/footer";
 import NavBar from "../NavBar/NavBar";
 import "./cartPage.css";
 import "../Home/home.css";
 import axios from "axios";
+import { useNavigate } from "react-router";
+import { checkoutCart } from "../actions/cartActions";
 
 const Cart = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const local = JSON.parse(localStorage.getItem("user"));
   const token = local.token;
   const cartDetails = useSelector((state) => state);
   const [currencyvalue, setcurrencyValue] = useState("USD");
-  console.log(cartDetails);
+  // console.log(cartDetails);
   const handleCheckout = (e) => {
-    var data = {
-      addedItems: cartDetails.addedItems,
-      total: cartDetails.total,
-      token: token,
-    };
-    axios.post("http://localhost:8080/order/add", data).then((response) => {
-      if (response.status === 200) {
-        console.log("Axios post done from Checkout");
-      }
-    });
+    if(cartDetails.addedItems.length !== 0) {
+      var data = {
+        addedItems: cartDetails.addedItems,
+        total: cartDetails.total,
+        token: token,
+      };
+      axios.post("http://localhost:8080/order/add", data).then((response) => {
+        if (response.status === 200) {
+          dispatch(checkoutCart());
+          navigate("/purchase")
+          // console.log("Axios post done from Checkout");
+        }
+      });
+    }
+    else {
+      alert("Your cart is empty...")
+    }
+    
   };
-
-  let addedItems = cartDetails.addedItems ? (
+  console.log(cartDetails.addedItems);
+  let addItems = cartDetails.addedItems.length !== 0 ? (
     cartDetails.addedItems.map((item) => {
       return (
         <li className="items odd">
@@ -54,7 +66,7 @@ const Cart = () => {
       );
     })
   ) : (
-    <p>Nothing.</p>
+    <h2>OOPS!...Nothing In Cart</h2>
   );
 
   return (
@@ -67,7 +79,7 @@ const Cart = () => {
               <h1>My Cart</h1>
             </div>
             <div className="cart">
-              <ul className="cartWrap">{addedItems}</ul>
+              <ul className="cartWrap">{addItems}</ul>
             </div>
 
             <div className="subtotal cf">
