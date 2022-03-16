@@ -74,10 +74,12 @@ app.post("/add", function (req, res) {
                 var sql3 =
                   "UPDATE itemdetails SET QuantityAvailable = QuantityAvailable - " +
                   mysql.escape(item.quantityInCart) +
+                  ",QuantitySold = QuantitySold + " +
+                  mysql.escape(item.quantityInCart) +
                   " WHERE ItemID = " +
                   mysql.escape(item.ItemId) +
                   ";";
-                  console.log(sql3);
+                console.log(sql3);
                 conn.query(sql3, function (err, result) {
                   if (err) {
                     console.log("Error in adding orderdetails data");

@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router";
 
 const LogoutButton = () => {
+  const navigate = useNavigate();
   const handleClick = () => {
     localStorage.removeItem("user");
+    navigate("/home");
   };
   return (
     <div>

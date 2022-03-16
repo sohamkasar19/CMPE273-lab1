@@ -60,8 +60,9 @@ const PurchasePage = () => {
     <div>
       <div class="content-container">
         <NavBar>New navigation</NavBar>
-        <div id="content" class="col-sm-10">
+        <div id="content" class="col-sm-12">
           <h2 class="title">Order History</h2>
+          <p>Click on order id for more details</p>
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
               <thead>

@@ -8,7 +8,7 @@ import cartReducer from './components/reducers/cart-reducer';
 import { Provider } from "react-redux"
 import { createStore } from "redux";
 
-const store = createStore(cartReducer);
+const store = createStore(cartReducer,window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 ReactDOM.render(
   <React.StrictMode>

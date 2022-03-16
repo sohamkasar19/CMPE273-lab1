@@ -16,11 +16,12 @@ import {
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
+import Heart from "react-animated-heart";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [flag, setFlag] = useState(false);
-  let itemData = [];
+  const [isClick, setClick] = useState(false);
+
   let welcomeBoard = (
     <h1>Explore one-of-a-kind finds from independent makers</h1>
   );
@@ -29,8 +30,8 @@ const HomePage = () => {
     Name: "",
   });
   const [currencyvalue, setcurrencyValue] = useState("USD");
-  const [redirect, setRedirect] = useState(false);
-  const [itemName, setItemName] = useState("");
+  const [itemList, setItemList] = useState([]);
+
   let currencySymbol = null;
   if (currencyvalue === "USD") {
     currencySymbol = <MonetizationOnIcon />;
@@ -39,52 +40,41 @@ const HomePage = () => {
   } else if (currencyvalue === "INR") {
     currencySymbol = <CurrencyRupeeIcon />;
   }
-  const fetchUserData = async () => {
-    const local = JSON.parse(localStorage.getItem("user"));
-    const token = local.token;
-    await axios
-      .get("http://localhost:8080/profile", {
+  useEffect(() => {
+    let isSubscribed = true;
+    const fetchUserData = async () => {
+      const local = JSON.parse(localStorage.getItem("user"));
+      const token = local.token;
+      let responseData = await axios.get("http://localhost:8080/profile", {
         params: {
           token: token,
         },
-      })
-      .then((response) => {
-        var data = response.data;
-        setformValue({
-          ProfileId: data.ProfileId,
-          Name: data.Name,
-        });
       });
-  };
-  const fetchItemImages = async () => {
-    await axios
-      .get("http://localhost:8080/item/all-images")
-      .then((response) => {
-        console.log("axios get all" + response.data);
-        for (let item of response.data) {
-          itemData.push(item);
-        }
-        console.log(itemData);
-        localStorage.setItem("item-images", JSON.stringify(itemData));
-        window.location.reload(false);
-        // console.log(itemData);
+     
+      setformValue({
+        ProfileId: responseData.data.ProfileId,
+        Name: responseData.data.Name,
       });
-  };
-  useEffect(() => {
-    if (localStorage.getItem("user")) {
-      fetchUserData();
+    };
+    const fetchItemImages = async () => {
+      let responseData = await axios.get(
+        "http://localhost:8080/item/all-images"
+      );
+      setItemList(responseData.data);
+    };
+    if (isSubscribed) {
+      fetchUserData().catch(console.error);
+      fetchItemImages().catch(console.error);
     }
-    if (!localStorage.getItem("item-images")) {
-      fetchItemImages();
-    }
+    return () => {
+      isSubscribed = false;
+    };
   }, []);
 
   const imageClickHandler = (event) => {
-    navigate('/item', {
-      state: event.target.name
+    navigate("/item", {
+      state: event.target.name,
     });
-    // setItemName(event.target.name);
-    // setFlag(true);
   };
   if (localStorage.getItem("user")) {
     welcomeBoard = (
@@ -97,20 +87,14 @@ const HomePage = () => {
   }
 
   let itemImageData = <>Loading Images</>;
-  if (localStorage.getItem("item-images")) {
-    itemData = localStorage.getItem("item-images");
-    itemData = JSON.parse(itemData);
-    // console.log( JSON.parse(itemData));
-    itemImageData = itemData.map((item) => (
+  if (itemList) {
+    itemImageData = itemList.map((item) => (
       <ImageListItem>
         <img
           src={item.ItemImage}
-          // src={`${"data:image/png;base64,"+item.ItemImage}?w=248&fit=crop&auto=format`}
-          // srcSet={`${"data:image/png;base64,"+item.ItemImage}?w=248&fit=crop&auto=format&dpr=2 2x`}
           name={item.ItemId}
           alt={item.ItemName}
           onClick={imageClickHandler}
-          // loading="lazy"
         />
         <ImageListItemBar
           title={item.ItemName}
@@ -126,26 +110,10 @@ const HomePage = () => {
       </ImageListItem>
     ));
   }
-  // const getARedirect = (flag) => {
-  //   if (flag) {
-  //     <Navigate
-  //       to={{
-  //         pathname: "/item",
-  //         state: itemName,
-  //       }}
-  //     />;
-  //   }
-  // };
+
   return (
     <>
-      {/* {flag && (
-        <Navigate
-          to={{
-            pathname: "/item",
-            state: itemName,
-          }}
-        />
-      )} */}
+    
       <div>
         <div className="content-container">
           <NavBar>New navigation</NavBar>
@@ -168,28 +136,6 @@ const HomePage = () => {
           <ImageList>
             <ImageListItem key="Subheader" cols={4}></ImageListItem>
             {itemImageData}
-            {/* {itemData.map((item) => (
-              <ImageListItem >
-                <img
-                  // src={item.ItemImage}
-                  src={`${item.img}?w=248&fit=crop&auto=format`}
-                  srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-                  alt={item.ItemName}
-                  loading="lazy"
-                />
-                <ImageListItemBar
-                  title={item.title}
-                  actionIcon={
-                    <IconButton
-                      sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                      aria-label={`info about ${item.title}`}
-                    >
-                      <FavoriteBorderIcon />
-                    </IconButton>
-                  }
-                />
-              </ImageListItem>
-            ))} */}
           </ImageList>
           {currencySymbol}
           {currencyvalue}

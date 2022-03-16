@@ -73,7 +73,7 @@ function NavBar() {
   }
   else {
     
-      navigate("/home")
+      // navigate("/home")
       LoginLogOutButton = 
       <Nav.Link className="border-left pl-2 ms-auto" href="">
         <LoginSignupButton />
