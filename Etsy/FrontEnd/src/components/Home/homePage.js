@@ -16,20 +16,25 @@ import {
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
+import Favourite from "./favourite";
 import Heart from "react-animated-heart";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const [isClick, setClick] = useState(false);
+  const [favouritesList, setFavouritesList] = useState([]);
 
   let welcomeBoard = (
     <h1>Explore one-of-a-kind finds from independent makers</h1>
   );
+
+
   const [formValue, setformValue] = useState({
     ProfileId: "",
     Name: "",
   });
+
   const [currencyvalue, setcurrencyValue] = useState("USD");
+
   const [itemList, setItemList] = useState([]);
 
   let currencySymbol = null;
@@ -40,8 +45,10 @@ const HomePage = () => {
   } else if (currencyvalue === "INR") {
     currencySymbol = <CurrencyRupeeIcon />;
   }
+  
   useEffect(() => {
     let isSubscribed = true;
+
     const fetchUserData = async () => {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
@@ -50,7 +57,6 @@ const HomePage = () => {
           token: token,
         },
       });
-     
       setformValue({
         ProfileId: responseData.data.ProfileId,
         Name: responseData.data.Name,
@@ -62,9 +68,24 @@ const HomePage = () => {
       );
       setItemList(responseData.data);
     };
+    const fetchFavourites = async () => {
+      const local = JSON.parse(localStorage.getItem("user"));
+      const token = local.token;
+      let responseData = await axios.get(
+        "http://localhost:8080/item/favourites",
+        {
+          params: {
+            token: token,
+          },
+        }
+      );
+      setFavouritesList(responseData.data);
+    };
+
     if (isSubscribed) {
       fetchUserData().catch(console.error);
       fetchItemImages().catch(console.error);
+      fetchFavourites().catch(console.error);
     }
     return () => {
       isSubscribed = false;
@@ -86,6 +107,10 @@ const HomePage = () => {
     welcomeBoard = <>Explore one-of-a-kind finds from independent makers</>;
   }
 
+  const isFavourite = (event) => {
+    console.log(event);
+  };
+
   let itemImageData = <>Loading Images</>;
   if (itemList) {
     itemImageData = itemList.map((item) => (
@@ -98,14 +123,7 @@ const HomePage = () => {
         />
         <ImageListItemBar
           title={item.ItemName}
-          actionIcon={
-            <IconButton
-              sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-              aria-label={`info about ${item.title}`}
-            >
-              <FavoriteBorderIcon />
-            </IconButton>
-          }
+          actionIcon={<Favourite data={item}></Favourite>}
         />
       </ImageListItem>
     ));
@@ -113,7 +131,6 @@ const HomePage = () => {
 
   return (
     <>
-    
       <div>
         <div className="content-container">
           <NavBar>New navigation</NavBar>

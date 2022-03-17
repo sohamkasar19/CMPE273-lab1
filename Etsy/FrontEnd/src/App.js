@@ -11,6 +11,7 @@ import Item from "./components/Item/itemPage";
 import Cart from './components/Cart/cartPage';
 import PurchasePage from './components/Purchases/purchaseHistoryPage';
 import PurchaseDetailsPage from './components/Purchases/purchaseDetailsPage';
+import ProfilePage from './components/Profile/profilePage';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile-page" element={<ProfilePage />} />
           <Route path="/item" element={<Item />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/purchase" element={<PurchasePage />} />

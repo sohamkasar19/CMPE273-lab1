@@ -1,0 +1,26 @@
+#profile-image {
+  border-radius: 50%;
+  height: 100px;
+  width: 200px;
+}
+
+.body {
+  color: rgb(12, 12, 12);
+  font-family: Tahoma, Verdana, Segoe, sans-serif;
+  padding: 10px;
+  font-size: larger;
+  
+}
+.container-profile-page {
+  background-color: none;
+  display: flex;
+  margin: auto;
+  width: 60%;
+  padding: 10px;
+}
+.fixed {
+  width: 100px;
+}
+.flex-item {
+  flex-grow: 5;
+}

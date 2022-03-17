@@ -4,6 +4,8 @@ const multer = require("multer");
 var app = express();
 const fs = require("fs");
 const path = require("path");
+require("dotenv").config();
+var jwt = require("jsonwebtoken");
 
 var connection = require("../dbConnection.js");
 
@@ -72,7 +74,7 @@ app.get("/all-images", function (req, res) {
             var filelocation = path.join(__dirname + "/../public/items", file);
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
-            item.ItemImage = "data:image/"+filetype+";base64,"+base64img;
+            item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
           }
           //   console.log(result);
           res.end(JSON.stringify(result));
@@ -97,7 +99,7 @@ app.get("/details", function (req, res) {
       //Login validation query
 
       var sql =
-      "SELECT * from itemdetails WHERE ItemId = " + mysql.escape(ItemId);
+        "SELECT * from itemdetails WHERE ItemId = " + mysql.escape(ItemId);
       conn.query(sql, function (err, result) {
         if (err) {
           console.log("Error in retrieving single item data");
@@ -118,10 +120,166 @@ app.get("/details", function (req, res) {
             var filelocation = path.join(__dirname + "/../public/items", file);
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
-            item.ItemImage = "data:image/"+filetype+";base64,"+base64img;
+            item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
           }
           //   console.log(result);
           res.end(JSON.stringify(result));
+        }
+      });
+    }
+  });
+});
+
+app.get("/favouritesImages", function (req, res) {
+  console.log("Inside favouritesImages  GET");
+  const token = req.query.token;
+  let decode = null;
+  try {
+    decode = jwt.verify(token, process.env.SECRET);
+  } catch (error) {
+    return res.status(400).send("invalid token");
+  }
+  let ProfileId = decode.id;
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+
+      var sql =
+        "SELECT * FROM favourites INNER JOIN itemdetails ON favourites.ItemId = itemdetails.ItemId WHERE ProfileId = " +
+        mysql.escape(ProfileId);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in retrieving favourite item data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in retrieving favourite item data");
+        } else {
+          // console.log(result[0].password);
+          //   console.log("Items Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          for (const [key, item] of Object.entries(result)) {
+            var file = item.ItemImage;
+            var filetype = file.split(".").pop();
+            console.log(file);
+            var filelocation = path.join(__dirname + "/../public/items", file);
+            var img = fs.readFileSync(filelocation);
+            var base64img = new Buffer(img).toString("base64");
+            item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
+          }
+          //   console.log(result);
+          res.end(JSON.stringify(result));
+        }
+      });
+    }
+  });
+});
+
+app.get("/favourites", function (req, res) {
+  console.log("Inside favourites  GET");
+  const token = req.query.token;
+  console.log(token);
+  let decode = null;
+  try {
+    decode = jwt.verify(token, process.env.SECRET);
+  } catch (error) {
+    return res.status(400).send("invalid token");
+  }
+  let ProfileId = decode.id;
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+
+      var sql =
+        "SELECT ItemId FROM favourites WHERE ProfileId = " +
+        mysql.escape(ProfileId);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in retrieving favourite item data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in retrieving favourite item data");
+        } else {
+          // console.log(result[0].password);
+          //   console.log("Items Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+
+          //   console.log(result);
+          res.end(JSON.stringify(result));
+        }
+      });
+    }
+  });
+});
+
+app.post("/set-remove-favourite", function (req, res) {
+  console.log("Inside set favourite  POST");
+  const { token, ItemId, isDelete } = req.body;
+  console.log(token);
+  let decode = null;
+  try {
+    decode = jwt.verify(token, process.env.SECRET);
+  } catch (error) {
+    return res.status(400).send("invalid token");
+  }
+  let ProfileId = decode.id;
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      
+      if(isDelete) {
+        var sql =
+        "DELETE FROM favourites WHERE ProfileId = " +
+        mysql.escape(ProfileId) +
+        " AND ItemId = " +
+        mysql.escape(ItemId) +
+        ";";
+      }else {
+        var sql =
+        "INSERT INTO favourites(ProfileId, ItemId) VALUES(" +
+        mysql.escape(ProfileId) +
+        "," +
+        mysql.escape(ItemId) +
+        ");";
+      }
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in setting favourite item data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in setting favourite item data");
+        } else {
+          // console.log(result[0].password);
+          //   console.log("Items Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+
+          //   console.log(result);
+          res.end("Set remove Favourite Done");
         }
       });
     }

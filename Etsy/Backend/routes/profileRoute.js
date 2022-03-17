@@ -91,10 +91,10 @@ app.get("/download-photo/", (req, res) => {
   var img = fs.readFileSync(filelocation);
   var base64img = new Buffer(img).toString("base64");
   res.writeHead(200, {
-    "Content--type": "image/"+filetype,
+    "Content--type": "image/" + filetype,
   });
   // console.log(base64img);
-  res.end("data:image/"+filetype+";base64,"+base64img);
+  res.end("data:image/" + filetype + ";base64," + base64img);
 });
 
 app.get("/", function (req, res) {
@@ -114,7 +114,7 @@ app.get("/", function (req, res) {
     try {
       decode = jwt.verify(token, process.env.SECRET);
     } catch (error) {
-      return  res.status(400).send('invalid token')
+      return res.status(400).send("invalid token");
     }
     let ProfileId = decode.id;
     // console.log("From Session: "+ res.cookie.access_token)
@@ -131,7 +131,8 @@ app.get("/", function (req, res) {
         //Login validation query
         console.log("No error");
         var sql =
-          "SELECT * from userdetails WHERE ProfileId = " + mysql.escape(ProfileId);
+          "SELECT * from userdetails WHERE ProfileId = " +
+          mysql.escape(ProfileId);
         conn.query(sql, function (err, result) {
           if (err) {
             console.log("Error in retrieving profile data");
@@ -204,6 +205,76 @@ app.post("/", (req, res) => {
       });
     }
   });
+});
+
+app.get("/new", function (req, res) {
+  console.log("Inside profile GET");
+  console.log("Request Body JWT TOKEN: " + req.query.token);
+
+  if (!req.query.token) {
+    console.log("No token");
+    res.writeHead(400, {
+      "Content-type": "text/plain",
+    });
+    res.end("No token");
+  } else {
+    const token = req.query.token;
+    // console.log("Token : " + token);
+    let decode = null;
+    try {
+      decode = jwt.verify(token, process.env.SECRET);
+    } catch (error) {
+      return res.status(400).send("invalid token");
+    }
+    let ProfileId = decode.id;
+    // console.log("From Session: "+ res.cookie.access_token)
+    //Query
+
+    connection.getConnection(function (err, conn) {
+      if (err) {
+        console.log("Error in creating connection!");
+        res.writeHead(400, {
+          "Content-type": "text/plain",
+        });
+        res.end("Error in creating connection!");
+      } else {
+        //Login validation query
+        console.log("No error");
+        var sql =
+          "SELECT * from userdetails WHERE ProfileId = " +
+          mysql.escape(ProfileId);
+        conn.query(sql, function (err, result) {
+          if (err) {
+            console.log("Error in retrieving profile data");
+            res.writeHead(400, {
+              "Content-type": "text/plain",
+            });
+            res.end("Error in retrieving profile data");
+          } else {
+            // console.log(result[0].password);
+            console.log("Profile Data: ", result);
+            res.writeHead(200, {
+              "Content-type": "application/json",
+            });
+            for (const [key, user] of Object.entries(result)) {
+              var file = user.ProfileImage;
+              var filetype = file.split(".").pop();
+              console.log(file);
+              var filelocation = path.join(
+                __dirname + "/../public/uploads",
+                file
+              );
+              var img = fs.readFileSync(filelocation);
+              var base64img = new Buffer(img).toString("base64");
+              user.ProfileImage =
+                "data:image/" + filetype + ";base64," + base64img;
+            }
+            res.end(JSON.stringify(result[0]));
+          }
+        });
+      }
+    });
+  }
 });
 // app.post("/upload-file", upload.array("photos", 5), (req, res) => {
 //   console.log("req.body", req.body);
