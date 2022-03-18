@@ -1,184 +1,69 @@
 import axios from "axios";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router";
 import NavBar from "../NavBar/NavBar";
 import "./profile.css";
 
 export const Profile = () => {
-  // let navigate = useNavigate();
-  const [formValue, setformValue] = React.useState({
-    ProfileId: "",
-    Email: "",
-    Name: "",
-    DOB: "",
-    About: "",
-    Country: "",
-    City: "",
-    Address: "",
-    Gender: "",
-    ProfileImage: "",
-    Phonenumber: "",
-    ProfileImagePreview: undefined,
-  });
+
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
     let isSubscribed = true;
-    let userdetails = null;
-    let imagePreview = undefined;
+
     const getUserDetails = async () => {
-      await axios
-        .get("http://localhost:8080/profile", {
+      let response = await axios
+        .get("http://localhost:8080/profile/new", {
           params: {
             token: token,
           },
-        })
-        .then((response) => {
-          console.log(response);
-          if (response.status === 200) {
-            console.log("inside then");
-            userdetails = response.data;
-            console.log(JSON.stringify(userdetails));
-          }
-        }).catch((err) => {
-          console.log(err);
         });
-      await axios
-        .get("http://localhost:8080/profile/download-photo/", {
-          params: {
-            file: userdetails.ProfileImage,
-          },
-        })
-        .then((response) => {
-            imagePreview = response.data;
-          // imagePreview = "data:image/jpg;base64, " + response.data;
-        });
-
-      if (isSubscribed) {
-        setformValue({
-          ProfileId: userdetails.ProfileId,
-          Email: userdetails.Email,
-          Name: userdetails.Name,
-          DOB: userdetails.DOB,
-          About: userdetails.About,
-          Country: userdetails.Country,
-          City: userdetails.City,
-          Address: userdetails.Address,
-          Gender: userdetails.Gender,
-          ProfileImage: userdetails.ProfileImage,
-          Phonenumber: userdetails.Phonenumber,
-          ProfileImagePreview: imagePreview,
-        });
-      }
+        setUserData(response.data);
     };
-    getUserDetails().catch(console.error);
+    if(isSubscribed) {
+      getUserDetails().catch(console.error);
+    }
     return () => {
       isSubscribed = false;
     };
   }, []);
 
-  // useEffect(() => {
-  //   const local = JSON.parse(localStorage.getItem("user"));
-  //   const token = local.token;
-  //   // const token = local["user"];
-  //   // if(!localStorage.getItem("user")) {
-  //   //   navigate("/");
-  //   // }
-  //   axios
-  //     .get("http://localhost:8080/profile", {
-  //       params: {
-  //         token: token,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       if (response.status === 200) {
-  //         console.log(
-  //           "Inside useEffect profile" + JSON.stringify(response.data)
-  //         );
-  //         var data = response.data;
-  //         setTimeout(async () => {
-  //           setformValue({
-  //             // ...formValue,
-  //             ProfileId: data.ProfileId,
-  //             Email: data.Email,
-  //             Name: data.Name,
-  //             DOB: data.DOB.split('T')[0],
-  //             About: data.About,
-  //             Country: data.Country,
-  //             City: data.City,
-  //             Address: data.Address,
-  //             Gender: data.Gender,
-  //             ProfileImage: data.ProfileImage,
-  //             Phonenumber: data.Phonenumber,
-  //           });
-  //         });
+ 
 
-  //         console.log("Inside formValue: " + formValue.DOB);
-  //         console.log("Profile Photo Name: ", formValue.ProfileImage);
-  //         axios
-  //           .get("http://localhost:8080/profile/download-photo/", {
-  //             params: {
-  //               file: data.ProfileImage,
-  //             },
-  //           })
-  //           .then((response) => {
-  //             let imagePreview = "data:image/jpg;base64, " + response.data;
-  //             // setTimeout(() => {
-  //             setformValue({
-  //               ProfileId: data.ProfileId,
-  //               Email: data.Email,
-  //               Name: data.Name,
-  //               DOB: data.DOB,
-  //               About: data.About,
-  //               Country: data.Country,
-  //               City: data.City,
-  //               Address: data.Address,
-  //               Gender: data.Gender,
-  //               ProfileImage: data.ProfileImage,
-  //               Phonenumber: data.Phonenumber,
-  //               ProfileImagePreview: imagePreview,
-  //             });
-  //             // });
-  //             // console.log("preview: " + formValue.ProfileImagePreview);
-  //           });
-  //       }
-
-  //       //Download image
-  //     });
-  // }, []);
-
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     if (event.target.name === "ProfileImage") {
       var profilePhoto = event.target.files[0];
       var data = new FormData();
       data.append("photos", profilePhoto);
-      axios.post("http://localhost:8080/profile/upload-photo", data);
-      setformValue({
-        ...formValue,
-        [event.target.name]: profilePhoto.name,
+      let response = await axios.post("http://localhost:8080/profile/upload-photo", data);
+      setUserData({
+        ...userData,
+        ProfileImageName: response.data,
       });
     } else {
-      setformValue({
-        ...formValue,
+      setUserData({
+        ...userData,
         [event.target.name]: event.target.value,
       });
     }
   };
 
   const handleSubmit = (event) => {
+    
     var data = {
-      ProfileId: formValue.ProfileId,
-      Email: formValue.Email,
-      Name: formValue.Name,
-      DOB: formValue.DOB,
-      About: formValue.About,
-      Country: formValue.Country,
-      City: formValue.City,
-      Address: formValue.Address,
-      Gender: formValue.Gender,
-      ProfileImage: formValue.ProfileImage,
-      Phonenumber: formValue.Phonenumber,
+      ProfileId: userData.ProfileId,
+      Email: userData.Email,
+      Name: userData.Name,
+      DOB: userData.DOB,
+      About: userData.About,
+      Country: userData.Country,
+      City: userData.City,
+      Address: userData.Address,
+      Gender: userData.Gender,
+      ProfileImage: userData.ProfileImageName,
+      Phonenumber: userData.Phonenumber
     };
     axios.post("http://localhost:8080/profile", data).then((response) => {
       if (response.status === 200) {
@@ -196,12 +81,12 @@ export const Profile = () => {
       className="img-fluid rounded-circle"
     />
   );
-  if (formValue.ProfileImagePreview) {
+  if (userData.ProfileImage) {
     profileImageData = (
       <img
         id="avatar_img"
         // src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
-        src={formValue.ProfileImagePreview}
+        src={userData.ProfileImage}
         alt=""
         className="img-fluid rounded-circle"
       />
@@ -307,7 +192,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="Name"
                     id="Name"
-                    value={formValue.Name ?? ""}
+                    value={userData.Name ?? ""}
                     onChange={handleChange}
                   />
                 </p>
@@ -324,7 +209,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="Email"
                     id="Email"
-                    value={formValue.Email ?? ""}
+                    value={userData.Email ?? ""}
                     onChange={handleChange}
                   />
                 </div>
@@ -341,7 +226,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="Phonenumber"
                     id="Phonenumber"
-                    value={formValue.Phonenumber ?? ""}
+                    value={userData.Phonenumber ?? ""}
                     onChange={handleChange}
                     className="text"
                   />
@@ -366,7 +251,7 @@ export const Profile = () => {
                       value="female"
                       name="Gender"
                       id="female"
-                      checked={formValue.Gender === "female"}
+                      checked={userData.Gender === "female"}
                       onChange={handleChange}
                     />
                   </label>
@@ -377,7 +262,7 @@ export const Profile = () => {
                       value="male"
                       name="Gender"
                       id="male"
-                      checked={formValue.Gender === "male"}
+                      checked={userData.Gender === "male"}
                       onChange={handleChange}
                     />
                   </label>
@@ -389,7 +274,7 @@ export const Profile = () => {
                       value="private"
                       name="Gender"
                       id="private"
-                      checked={formValue.Gender === "Rather not say"}
+                      checked={userData.Gender === "Rather not say"}
                       onChange={handleChange}
                     />
                   </label>
@@ -409,7 +294,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="DOB"
                     id="DOB"
-                    value={formValue.DOB ?? ""}
+                    value={userData.DOB ?? ""}
                     onChange={handleChange}
                   />
                 </div>
@@ -426,7 +311,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="Address"
                     id="Address"
-                    value={formValue.Address ?? ""}
+                    value={userData.Address ?? ""}
                     onChange={handleChange}
                     className="text"
                   />
@@ -444,7 +329,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="City"
                     id="City"
-                    value={formValue.City ?? ""}
+                    value={userData.City ?? ""}
                     onChange={handleChange}
                     className="text"
                   />
@@ -462,7 +347,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="Country"
                     id="Country"
-                    value={formValue.Country ?? ""}
+                    value={userData.Country ?? ""}
                     onChange={handleChange}
                     className="text"
                   />

@@ -12,6 +12,8 @@ import Cart from './components/Cart/cartPage';
 import PurchasePage from './components/Purchases/purchaseHistoryPage';
 import PurchaseDetailsPage from './components/Purchases/purchaseDetailsPage';
 import ProfilePage from './components/Profile/profilePage';
+import ShopPage from './components/Shop/ShopPage';
+import ShopName from './components/Shop/ShopName';
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
           <Route path="/cart" element={<Cart />} />
           <Route path="/purchase" element={<PurchasePage />} />
           <Route path="/purchase-details" element={<PurchaseDetailsPage />} />
+          <Route path="/your-shop" element={<ShopPage />} />
+          <Route path="/name-your-shop" element={<ShopName />} />
         </Routes>
       </BrowserRouter>
     </div>

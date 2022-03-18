@@ -6,3 +6,9 @@
   left: 0;
   bottom: 0;
 }
+a:link,
+a:visited,
+a:hover,
+a:active {
+  color: #212529;
+}

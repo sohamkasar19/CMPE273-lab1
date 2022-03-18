@@ -99,17 +99,15 @@ const HomePage = () => {
   };
   if (localStorage.getItem("user")) {
     welcomeBoard = (
-      <>
-        Welcome to Etsy, <a href="/profile">{formValue.Name}</a>!
-      </>
+      <p>
+        Welcome to Etsy, <a href="/profile-page">{formValue.Name}</a>!
+      </p>
     );
   } else {
     welcomeBoard = <>Explore one-of-a-kind finds from independent makers</>;
   }
 
-  const isFavourite = (event) => {
-    console.log(event);
-  };
+ 
 
   let itemImageData = <>Loading Images</>;
   if (itemList) {

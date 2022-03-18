@@ -6,6 +6,7 @@ var cookieParser = require("cookie-parser");
 var app = express();
 const fs = require("fs");
 const path = require("path");
+var crypto = require("crypto");
 require("dotenv").config();
 var connection = require("./../dbConnection.js");
 // const { log } = require("console");
@@ -33,8 +34,23 @@ const jwt = require("jsonwebtoken");
 // Set The Storage Engine
 const storage = multer.diskStorage({
   destination: "./public/uploads/",
+  // filename: function (req, file, cb) {
+  //   cb(null, file.originalname);
+  // },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    if (
+      file.mimetype !== "image/png" &&
+      file.mimetype !== "image/jpg" &&
+      file.mimetype !== "image/jpeg"
+    ) {
+      var err = new Error();
+      err.code = "filetype";
+      return cb(err);
+    } else {
+      var fileName = crypto.randomBytes(10).toString("hex");
+      file.filename = fileName;
+      cb(null, fileName + ".jpg");
+    }
   },
 });
 
@@ -65,7 +81,7 @@ function checkFileType(file, cb) {
 //uploading photo
 app.post("/upload-photo", upload.single("photos"), (req, res) => {
   console.log("req.body", req.body);
-  res.end();
+  res.end(res.req.file.filename);
 });
 // app.post("/upload-photo", (req, res) => {
 // //   console.log("req.body", req.file);
@@ -256,18 +272,20 @@ app.get("/new", function (req, res) {
             res.writeHead(200, {
               "Content-type": "application/json",
             });
-            for (const [key, user] of Object.entries(result)) {
-              var file = user.ProfileImage;
-              var filetype = file.split(".").pop();
-              console.log(file);
-              var filelocation = path.join(
-                __dirname + "/../public/uploads",
-                file
-              );
-              var img = fs.readFileSync(filelocation);
-              var base64img = new Buffer(img).toString("base64");
-              user.ProfileImage =
-                "data:image/" + filetype + ";base64," + base64img;
+            if (result[0].ProfileImage) {
+              for (const [key, user] of Object.entries(result)) {
+                var file = user.ProfileImage;
+                var filetype = file.split(".").pop();
+                console.log(file);
+                var filelocation = path.join(
+                  __dirname + "/../public/uploads",
+                  file
+                );
+                var img = fs.readFileSync(filelocation);
+                var base64img = new Buffer(img).toString("base64");
+                user.ProfileImage =
+                  "data:image/" + filetype + ";base64," + base64img;
+              }
             }
             res.end(JSON.stringify(result[0]));
           }

@@ -11,6 +11,7 @@ var signupRoute = require("./routes/signupRoute.js");
 var profileRoute = require("./routes/profileRoute.js");
 var itemRoute = require("./routes/itemRoute.js")
 var orderRoute = require("./routes/orderRoute.js")
+var shopRoute = require("./routes/shopRoute.js")
 
 var connection = require("./dbConnection.js");
 var constants = require("./config.json");
@@ -106,6 +107,8 @@ app.use("/profile", profileRoute);
 app.use("/item", itemRoute);
 
 app.use("/order", orderRoute);
+
+app.use("/shop", shopRoute);
 
 app.get("/", (req, res) => {
   console.log("TEST");
