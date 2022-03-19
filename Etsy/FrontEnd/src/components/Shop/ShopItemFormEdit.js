@@ -44,8 +44,12 @@ function ShopItemFormEdit(props) {
 
   const handleItemSubmit = async (e) => {
     e.preventDefault();
-    await axios.post("http://localhost:8080/item/add", itemForm);
-    window.location.reload(false);
+    
+    await axios.post("http://localhost:8080/item/edit", itemForm);
+    if(itemForm.ItemImage.length !== 0) {
+      window.location.reload(false);
+    }
+    props.onHide();
   };
   return (
     <div>
@@ -159,7 +163,7 @@ function ShopItemFormEdit(props) {
                   name="ItemImage"
                   type="file"
                   onChange={handleChange}
-                  required
+                 
                 />
               </Col>
             </Form.Group>

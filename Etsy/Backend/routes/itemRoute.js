@@ -141,7 +141,10 @@ app.get("/details", function (req, res) {
             var file = item.ItemImage;
             var filetype = file.split(".").pop();
             console.log(file);
-            var filelocation = path.join(__dirname + "/../public/uploads", file);
+            var filelocation = path.join(
+              __dirname + "/../public/uploads",
+              file
+            );
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
@@ -194,7 +197,10 @@ app.get("/favouritesImages", function (req, res) {
             var file = item.ItemImage;
             var filetype = file.split(".").pop();
             console.log(file);
-            var filelocation = path.join(__dirname + "/../public/uploads", file);
+            var filelocation = path.join(
+              __dirname + "/../public/uploads",
+              file
+            );
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
@@ -337,7 +343,7 @@ app.post("/add", function (req, res) {
         ", " +
         mysql.escape(itemToAdd.Description) +
         "); ";
-        console.log(sql);
+      console.log(sql);
       conn.query(sql, function (err, result) {
         if (err) {
           console.log("Error in add item data");
@@ -346,7 +352,74 @@ app.post("/add", function (req, res) {
           });
           res.end("Error in add item data");
         } else {
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
 
+          res.end("Item Added");
+        }
+      });
+    }
+  });
+});
+
+app.post("/edit", function (req, res) {
+  console.log("Inside add item  POST");
+  const itemToAdd = req.body;
+  console.log(itemToAdd.ItemImage.length);
+
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      if(itemToAdd.ItemImage.length === 0){
+        var sql =
+        "UPDATE itemdetails SET ItemName = " +
+        mysql.escape(itemToAdd.ItemName) +
+        ", Category = " +
+        mysql.escape(itemToAdd.Category) +
+        ", QuantityAvailable = " +
+        mysql.escape(itemToAdd.QuantityAvailable) +
+        ", Price = " +
+        mysql.escape(itemToAdd.Price) +
+        ", Description = " +
+        mysql.escape(itemToAdd.Description) +
+        " WHERE ItemId = " +
+        mysql.escape(itemToAdd.ItemId) +
+        " ; ";
+      }
+      else {
+        var sql =
+        "UPDATE itemdetails SET ItemName = " +
+        mysql.escape(itemToAdd.ItemName) +
+        ", Category = " +
+        mysql.escape(itemToAdd.Category) +
+        ", QuantityAvailable = " +
+        mysql.escape(itemToAdd.QuantityAvailable) +
+        ", Price = " +
+        mysql.escape(itemToAdd.Price) +
+        ", Description = " +
+        mysql.escape(itemToAdd.Description) +
+        ", ItemImage = " +
+        mysql.escape(itemToAdd.ItemImage) +
+        " WHERE ItemId = " +
+        mysql.escape(itemToAdd.ItemId) +
+        " ; ";
+      }
+      
+      console.log(sql);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in add item data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in add item data");
+        } else {
           res.writeHead(200, {
             "Content-type": "application/json",
           });

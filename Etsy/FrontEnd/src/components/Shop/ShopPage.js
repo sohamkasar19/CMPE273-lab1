@@ -6,13 +6,14 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import ShopItemForm from "./ShopItemForm";
 import ShopImage from "./ShopImage";
 import EditIcon from "@mui/icons-material/Edit";
 import ShopItemFormEdit from "./ShopItemFormEdit";
 
 function ShopPage() {
+  const navigate = useNavigate();
   const { state } = useLocation();
 
   const [shopData, setShopData] = useState({});
@@ -21,6 +22,8 @@ function ShopPage() {
   const [ownerData, setOwnerData] = useState({});
   const [showItemForm, setShowItemForm] = useState(false);
   const [showItemFormEdit, setShowItemFormEdit] = useState(false);
+  const [totalSales, setTotalSales] = useState(0);
+  const [showContactDetails, setShowContactDetails] = useState(false);
 
   const [selectedItem, setSelectedItem] = useState({});
 
@@ -52,6 +55,13 @@ function ShopPage() {
         }
       );
       setShopItems(responseShopItems.data);
+      console.log(typeof responseShopItems.data);
+      let totalSold = responseShopItems.data.reduce((prev, curr) => {
+        return (prev += curr.QuantitySold);
+      }, 0);
+      console.log(totalSold);
+      setTotalSales(totalSold);
+
       if (localStorage.getItem("user")) {
         const local = JSON.parse(localStorage.getItem("user"));
         const token = local.token;
@@ -68,54 +78,6 @@ function ShopPage() {
         setIsOwner(responseIsOwner.data);
       }
     };
-    // await axios
-    //   .get("http://localhost:8080/shop/details", {
-    //     params: {
-    //       ShopName: state,
-    //     },
-    //   })
-    //   .then((responseShop) => {
-    //     setShopData(responseShop.data);
-    //   })
-    //   .then((responseShop) => {
-    //     axios
-    //       .get("http://localhost:8080/profile/new/id", {
-    //         params: {
-    //           ProfileId: responseShop.data.ProfileId,
-    //         },
-    //       })
-    //       .then((response) => {
-    //         setOwnerData(response.data);
-    //       });
-    //   })
-    //   .then((responseShop) => {
-    //     axios
-    //       .get("http://localhost:8080/shop/items", {
-    //         params: {
-    //           ShopId: responseShop.data.ShopId,
-    //         },
-    //       })
-    //       .then((response) => {
-    //         setShopItems(response.data);
-    //       });
-    //   })
-    //   .then((responseShop) => {
-    //     if (localStorage.getItem("user")) {
-    //       const local = JSON.parse(localStorage.getItem("user"));
-    //       const token = local.token;
-    //       axios
-    //         .get("http://localhost:8080/shop/check-owner", {
-    //           params: {
-    //             ShopId: responseShop.data.ShopId,
-    //             token: token,
-    //           },
-    //         })
-    //         .then((response) => {
-    //           setIsOwner(response.data);
-    //         });
-    //     }
-    //   });
-    // };
 
     if (isSubscribed) {
       fetchAllShopData().catch(console.error());
@@ -153,6 +115,11 @@ function ShopPage() {
       setShowItemFormEdit(true);
     };
   };
+  const imageClickHandler = (event) => {
+    navigate("/item", {
+      state: event.target.name,
+    });
+  };
 
   let ShopItemImages = (
     <>
@@ -161,14 +128,14 @@ function ShopPage() {
           <ImageListItem key={item.ItemId}>
             <img
               src={item.ItemImage}
-              // src={`${item.img}?w=248&fit=crop&auto=format`}
-              // srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              name={item.ItemId}
               alt={item.ItemName}
               loading="lazy"
+              onClick={imageClickHandler}
             />
             <ImageListItemBar
               title={item.ItemName}
-              subtitle={"Sales:"}
+              subtitle={"Sales: " + item.QuantitySold}
               actionIcon={
                 isOwner && (
                   <EditIcon fontSize="medium" onClick={handleEditIcon(item)} />
@@ -181,6 +148,36 @@ function ShopPage() {
       </ImageList>
     </>
   );
+
+  let OwnerImage = (
+    <img
+      id="avatar_img"
+      style={{ width: 100, height: 100 }}
+      src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
+      // src={formValue.ProfileImagePreview}
+      alt=""
+      className="img-fluid rounded-circle"
+    />
+  );
+  if (ownerData.ProfileImage) {
+    OwnerImage = (
+      <img
+        style={{ width: 100, height: 100 }}
+        id="profile-image"
+        src={ownerData.ProfileImage}
+        alt=""
+        className="img-fluid rounded-circle"
+      />
+    );
+  }
+
+  let contactDetails = null;
+  if(showContactDetails) {
+    contactDetails = (
+      <p>Email : {ownerData.Email}</p>
+    )
+  }
+
   return (
     <>
       <div class="jumbotron jumbotron-fluid">
@@ -211,22 +208,36 @@ function ShopPage() {
                       </Button>{" "}
                     </label>
                   )}
+                  {isOwner && (
+                    <div>
+                      <h4>Total Sales : {totalSales}</h4>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
             <div className="d-flex justify-content-end">
               <div className="d-flex flex-column ">
-                <img
-                  style={{ width: 100, height: 100 }}
-                  id="profile-image"
-                  // src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
-                  src={ownerData.ProfileImage}
-                  alt=""
-                  className="img-fluid rounded-circle"
-                />
+                <div className="d-flex justify-content-center">SHOP OWNER</div>
+                <div className="d-flex justify-content-center">
+                {OwnerImage}
+                </div>
+                
                 {/* <br/> */}
                 <div className="d-flex justify-content-center">
                   {ownerData.Name}
+                </div>
+                <div className="d-flex justify-content-center">
+                  <Button
+                    variant="text"
+                    style={{ size: "small", color: "black" }}
+                    onClick={() => setShowContactDetails(true)}
+                  >
+                    Contact
+                  </Button>
+                </div>
+                <div className="d-flex justify-content-center">
+                {contactDetails}
                 </div>
               </div>
             </div>

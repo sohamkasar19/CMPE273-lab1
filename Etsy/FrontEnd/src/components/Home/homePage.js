@@ -112,14 +112,14 @@ const HomePage = () => {
   let itemImageData = <>Loading Images</>;
   if (itemList) {
     itemImageData = itemList.map((item) => (
-      <ImageListItem>
+      <ImageListItem key={item.ItemId}> 
         <img
           src={item.ItemImage}
           name={item.ItemId}
           alt={item.ItemName}
           onClick={imageClickHandler}
         />
-        <ImageListItemBar
+        <ImageListItemBar 
           title={item.ItemName}
           actionIcon={<Favourite data={item}></Favourite>}
         />
@@ -148,8 +148,8 @@ const HomePage = () => {
               </Card.Text>
             </Card.Body>
           </Card>
-          <ImageList>
-            <ImageListItem key="Subheader" cols={4}></ImageListItem>
+          <ImageList cols={4}>
+           
             {itemImageData}
           </ImageList>
           {currencySymbol}
