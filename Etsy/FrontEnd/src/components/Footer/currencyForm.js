@@ -1,17 +1,26 @@
 import React from "react";
 import { Form,Button } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import Select from "react-select";
+import { changeCurrency } from "../actions/cartActions";
 // import EuroIcon from "@mui/icons-material/Euro";
 // import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 // import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 // import { MenuItem } from "@mui/material";
-const CurrencyForm = ({setcurrencyvalue}) => {
+const CurrencyForm = (props) => {
+
+  const reduxState = useSelector((state) => state);
+  const dispatch = useDispatch();
+
   const options = [
     { value: "USD", label: "USD" },
     { value: "Euro", label: "Euro" },
     { value: "INR", label: "INR" },
   ];
-  const [formValue, setformValue] = React.useState("USD");
+  const [formValue, setformValue] = React.useState(reduxState.currency);
+
+  
+
   // const [handleChange] = React.useState(() => {
   //     return () => {
   //         setformValue(formValue);
@@ -23,8 +32,10 @@ const CurrencyForm = ({setcurrencyvalue}) => {
   };
  
 
-  const handleCallback = () => {
-    setcurrencyvalue(formValue);
+  const handleSave = () => {
+    // setcurrencyvalue(formValue);
+    dispatch(changeCurrency(formValue))
+    props.onHide();
   };
   
 
@@ -51,15 +62,16 @@ const CurrencyForm = ({setcurrencyvalue}) => {
         <Form.Label>Currency</Form.Label>
         <Select
           name="name"
-          placeholder="USD"
-          searchable={false}
+          placeholder={formValue}
+          
+          // searchable={false}
           value={formValue}
           options={options}
           onChange={handleChange}
         />
       </Form.Group>
       <div style={{ float: "right" }}>
-        <Button variant="dark" type="submit" size="sm" onClick={handleCallback}>
+        <Button variant="dark" type="submit" size="sm" onClick={handleSave}>
           {" "}
           Save
         </Button>

@@ -17,9 +17,12 @@ import ShopName from './components/Shop/ShopName';
 
 function App() {
   return (
+
+
     <div className="App">
-      
+     
       <BrowserRouter>
+      
         <Routes>
           <Route path="/home" element={<HomePage />} />
           <Route path="/navbar" element={<NavBar />} />
@@ -34,7 +37,10 @@ function App() {
           <Route path="/your-shop" element={<ShopPage />} />
           <Route path="/name-your-shop" element={<ShopName />} />
         </Routes>
+
+        
       </BrowserRouter>
+      
     </div>
   );
 }

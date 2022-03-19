@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import "./home.css";
-import { Card } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import NavBar from "../NavBar/NavBar";
 import Footer from "../Footer/footer";
 import EuroIcon from "@mui/icons-material/Euro";
@@ -18,10 +18,18 @@ import { useNavigate } from "react-router";
 import { Navigate } from "react-router-dom";
 import Favourite from "./favourite";
 import Heart from "react-animated-heart";
+import { useSelector } from "react-redux";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [favouritesList, setFavouritesList] = useState([]);
+
+  
+
+  const reduxState = useSelector((state) => state);
+  console.log("redux "+  (reduxState.currency));
+
+  const [currencyvalue, setcurrencyValue] = useState(reduxState.currency);
 
   let welcomeBoard = (
     <h1>Explore one-of-a-kind finds from independent makers</h1>
@@ -33,7 +41,7 @@ const HomePage = () => {
     Name: "",
   });
 
-  const [currencyvalue, setcurrencyValue] = useState("USD");
+
 
   const [itemList, setItemList] = useState([]);
 
@@ -86,17 +94,19 @@ const HomePage = () => {
       fetchUserData().catch(console.error);
       fetchItemImages().catch(console.error);
       fetchFavourites().catch(console.error);
+      setcurrencyValue(reduxState.currency);
     }
     return () => {
       isSubscribed = false;
     };
-  }, []);
+  }, [reduxState.currency]);
 
   const imageClickHandler = (event) => {
     navigate("/item", {
       state: event.target.name,
     });
   };
+
   if (localStorage.getItem("user")) {
     welcomeBoard = (
       <p>
@@ -107,7 +117,9 @@ const HomePage = () => {
     welcomeBoard = <>Explore one-of-a-kind finds from independent makers</>;
   }
 
- 
+ let ImageTitle = (
+   <Button style={{backgroundColor:"black", borderRadius:"40px" }} >{currencySymbol} </Button>
+ )
 
   let itemImageData = <>Loading Images</>;
   if (itemList) {
@@ -120,7 +132,8 @@ const HomePage = () => {
           onClick={imageClickHandler}
         />
         <ImageListItemBar 
-          title={item.ItemName}
+        sx={{backgroundColor: "transparent"}}
+          title={ <Button style={{backgroundColor:"black", borderRadius:"40px" }} >{currencySymbol} {item.Price}</Button>}
           actionIcon={<Favourite data={item}></Favourite>}
         />
       </ImageListItem>
@@ -156,7 +169,7 @@ const HomePage = () => {
           {currencyvalue}
         </div>
         <div className="footer--pin">
-          <Footer setcurrencyValue={setcurrencyValue} />
+          <Footer  />
         </div>
       </div>
     </>

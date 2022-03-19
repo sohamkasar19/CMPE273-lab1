@@ -4,7 +4,7 @@ import CurrencyForm from "./currencyForm";
 import EuroIcon from "@mui/icons-material/Euro";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
-function CurrencyModal({ setCurrencyValue }) {
+function CurrencyModal( ) {
   const [showLogin, setShowLogin] = useState(false);
 
   const handleCloseLogin = () => setShowLogin(false);
@@ -12,7 +12,6 @@ function CurrencyModal({ setCurrencyValue }) {
   const [currencyvalue, setcurrencyvalue] = useState("USD");
 
   
-  setCurrencyValue(currencyvalue);
   return (
     <>
       <div>
@@ -26,7 +25,7 @@ function CurrencyModal({ setCurrencyValue }) {
           <Modal.Title>Update you settings</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <CurrencyForm setcurrencyvalue={setcurrencyvalue} />
+          <CurrencyForm onHide={handleCloseLogin} />
         </Modal.Body>
       </Modal>
     </>

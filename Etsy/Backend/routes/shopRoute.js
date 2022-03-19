@@ -275,6 +275,44 @@ app.get("/details", function (req, res) {
   });
 });
 
+app.get("/details-by-id", function (req, res) {
+  console.log("Inside get shop details by id GET");
+
+  const { ShopId } = req.query;
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+
+      var sql =
+        "SELECT ShopName from shopdetails WHERE ShopId = " +
+        mysql.escape(ShopId) +
+        ";";
+
+      // console.log(sql);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error while  get shop details data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error while get shop details data");
+        } else {
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          res.end(JSON.stringify(result[0]));
+        }
+      });
+    }
+  });
+});
+
 app.get("/items", function (req, res) {
   console.log("Inside get shop items GET");
 

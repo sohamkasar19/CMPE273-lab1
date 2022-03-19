@@ -11,6 +11,8 @@ import ShopItemForm from "./ShopItemForm";
 import ShopImage from "./ShopImage";
 import EditIcon from "@mui/icons-material/Edit";
 import ShopItemFormEdit from "./ShopItemFormEdit";
+import NavBar from "../NavBar/NavBar";
+import Footer from "../Footer/footer";
 
 function ShopPage() {
   const navigate = useNavigate();
@@ -24,8 +26,9 @@ function ShopPage() {
   const [showItemFormEdit, setShowItemFormEdit] = useState(false);
   const [totalSales, setTotalSales] = useState(0);
   const [showContactDetails, setShowContactDetails] = useState(false);
-
   const [selectedItem, setSelectedItem] = useState({});
+
+  const [currencyvalue, setcurrencyValue] = useState("USD");
 
   useEffect(() => {
     let isSubscribed = true;
@@ -180,11 +183,14 @@ function ShopPage() {
 
   return (
     <>
+    <div class="content-container">
+    <NavBar>New navigation</NavBar>
       <div class="jumbotron jumbotron-fluid">
         <div class="container">
           <div className="d-flex justify-content-between">
             <div class="d-flex justify-content-start">
               {/* {shopImage} */}
+              <br/>
               <ShopImage data={shopData.ShopImage} />
               <div className="d-flex flex-column ">
                 <h1 class="display-4">&nbsp;{shopData.ShopName}</h1>
@@ -283,6 +289,10 @@ function ShopPage() {
         <br />
         <br />
         {ShopItemImages}
+      </div>
+      </div>
+      <div className="footer--pin">
+        <Footer setcurrencyValue={setcurrencyValue} />
       </div>
     </>
   );

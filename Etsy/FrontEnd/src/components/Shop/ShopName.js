@@ -7,12 +7,15 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { InputLabel } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router";
+import NavBar from "../NavBar/NavBar";
+import Footer from "../Footer/footer";
 
 function ShopName() {
   
   const navigate = useNavigate();
   const [isAvailable, setIsAvailable] = useState("");
   const [shopName, setShopName] = useState("");
+  const [currencyvalue, setcurrencyValue] = useState("USD");
 
   
  
@@ -92,6 +95,9 @@ function ShopName() {
   };
 
   return (
+    <>
+    <div class="content-container">
+        <NavBar>New navigation</NavBar>
     <div className="d-flex justify-content-center">
       <br />
       <br />
@@ -167,6 +173,11 @@ function ShopName() {
         </div>
       </div>
     </div>
+    </div>
+      <div className="footer--pin">
+        <Footer setcurrencyValue={setcurrencyValue} />
+      </div>
+    </>
   );
 }
 

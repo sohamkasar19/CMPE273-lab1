@@ -1,6 +1,7 @@
-import { ADD_TO_CART, CHECKOUT_CART } from "../actions/action-types/cart-actions";
+import { ADD_TO_CART, CHANGE_CURRENCY, CHECKOUT_CART } from "../actions/action-types/cart-actions";
 
 const initState = {
+  currency: "USD",
   addedItems: [],
   total: 0,
 };
@@ -38,10 +39,17 @@ const cartReducer = (state = initState, action) => {
     }
     
   }
-  if(action.type === CHECKOUT_CART) {
+  else if(action.type === CHECKOUT_CART) {
     return {
+      currency: state.currency,
       addedItems: [],
       total: 0,
+    }
+  }
+  else if(action.type === CHANGE_CURRENCY) {
+    return {
+      ...state,
+      currency: action.currency
     }
   }
 

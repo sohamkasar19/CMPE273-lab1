@@ -35,8 +35,6 @@ const PurchasePage = () => {
     };
   }, []);
 
- 
-
   let purchases = purchaseData.map((order) => {
     return (
       <tr>
@@ -56,13 +54,36 @@ const PurchasePage = () => {
     );
   });
 
+  let purchasesTable = <h3>You haven't ordered anything</h3>;
+
+  if (purchaseData) {
+    purchasesTable = (
+      <>
+        <p>Click on order id for more details</p>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <td class="text-center">Order ID</td>
+                <td class="text-center">Date Added</td>
+                <td class="text-right">Total</td>
+              </tr>
+            </thead>
+            <tbody>{purchases}</tbody>
+          </table>
+        </div>
+      </>
+    );
+  }
+
   return (
     <div>
       <div class="content-container">
         <NavBar>New navigation</NavBar>
-        <div id="content" class="col-sm-12">
-          <h2 class="title">Order History</h2>
-          <p>Click on order id for more details</p>
+        <div id="content" className="d-flex justify-content-center">
+          <div className="d-flex flex-column ">
+            <h2 class="title">Order History</h2>
+            {/* <p>Click on order id for more details</p>
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
               <thead>
@@ -74,6 +95,8 @@ const PurchasePage = () => {
               </thead>
               <tbody>{purchases}</tbody>
             </table>
+          </div> */}
+          {purchasesTable}
           </div>
         </div>
       </div>

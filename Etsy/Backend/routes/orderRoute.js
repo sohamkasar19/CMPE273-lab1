@@ -54,10 +54,14 @@ app.post("/add", function (req, res) {
           console.log("Adding to orderdetails");
           addedItems.map((item) => {
             var sql2 =
-              "INSERT INTO orderdetails(OrderId, ItemId, Quantity) VALUES(" +
+              "INSERT INTO orderdetails(OrderId, ItemId, ItemName, Price, Quantity) VALUES(" +
               mysql.escape(OrderId) +
               "," +
               mysql.escape(item.ItemId) +
+              "," +
+              mysql.escape(item.ItemName) +
+              "," +
+              mysql.escape(item.Price) +
               "," +
               mysql.escape(item.quantityInCart) +
               ");";
@@ -167,7 +171,7 @@ app.get("/details", function (req, res) {
     } else {
       //Login validation query
       var sql =
-        "SELECT * FROM orderdetails INNER JOIN itemdetails ON orderdetails.ItemId = itemdetails.ItemId  WHERE  OrderId = " +
+        "SELECT orderdetails.OrderId, orderdetails.ItemName, orderdetails.Price, orderdetails.Quantity, itemdetails.ItemImage  FROM orderdetails INNER JOIN itemdetails ON orderdetails.ItemId = itemdetails.ItemId  WHERE  OrderId = " +
         mysql.escape(OrderId);
       //   console.log(sql);
       conn.query(sql, function (err, result) {
@@ -188,7 +192,7 @@ app.get("/details", function (req, res) {
             var file = item.ItemImage;
             var filetype = file.split(".").pop();
             console.log(file);
-            var filelocation = path.join(__dirname + "/../public/items", file);
+            var filelocation = path.join(__dirname + "/../public/uploads", file);
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;

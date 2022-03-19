@@ -14,13 +14,18 @@ import {
   ImageListItemBar,
 } from "@mui/material";
 import { Button } from "react-bootstrap";
+import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  
+
   const [userData, setUserData] = useState({});
-  const [currencyvalue, setcurrencyValue] = useState("USD");
+ 
   const [favouritesList, setFavouritesList] = useState([]);
   const [shopData, setShopData] = useState({});
+  
+
   useEffect(() => {
     let isSubscribed = true;
     const local = JSON.parse(localStorage.getItem("user"));
@@ -58,10 +63,11 @@ const ProfilePage = () => {
         }
       );
       setFavouritesList(responseData.data);
-    }
+    };
     if (isSubscribed) {
       fetchUserData().catch(console.error);
       fetchFavourites().catch(console.error);
+      
     }
 
     return () => {
@@ -69,8 +75,36 @@ const ProfilePage = () => {
     };
   }, []);
 
+
+  
+
   const handleEditIcon = () => {
     navigate("/profile");
+  };
+  const handleYourShopButton = async () => {
+    const local = JSON.parse(localStorage.getItem("user"));
+    const token = local.token;
+    let response = await axios.get(
+      "http://localhost:8080/shop/check-shop-exists",
+      {
+        params: {
+          token: token,
+        },
+      }
+    );
+    // console.log(response.data === "Not Found");
+    if (response.data === "Not Found") {
+      navigate("/name-your-shop");
+    } else {
+      navigate("/your-shop", {
+        state: response.data,
+      });
+    }
+  };
+  const imageClickHandler = (event) => {
+    navigate("/item", {
+      state: event.target.name,
+    });
   };
 
   let FavouriteItemList = (
@@ -94,16 +128,18 @@ const ProfilePage = () => {
       <>
         <ImageList cols={4}>
           {favouritesList.map((item) => (
-            <ImageListItem key={item.ItemId} >
+            <ImageListItem key={item.ItemId}>
               <img
                 id="item-image"
                 src={item.ItemImage}
+                name={item.ItemId}
                 // src={`${item.ItemImage}?w=248&fit=crop&auto=format`}
                 // srcSet={`${item.ItemImage}?w=248&fit=crop&auto=format&dpr=2 2x`}
+                onClick={imageClickHandler}
                 alt={item.title}
                 loading="lazy"
               />
-              <ImageListItemBar  title={item.ItemName} />
+              <ImageListItemBar title={item.ItemName} />
             </ImageListItem>
           ))}
         </ImageList>
@@ -134,15 +170,13 @@ const ProfilePage = () => {
                 <EditIcon fontSize="large" onClick={handleEditIcon} />
               </div>
               <div className="d-flex justify-content-end">
-              <div class="d-flex flex-column">
-                <div>
-              
-              </div>
-              <br/>
-              <Button variant="dark" onClick={()=>navigate("/name-your-shop")}>Your Shop</Button>
-              
-              </div>
- 
+                <div class="d-flex flex-column">
+                  <div></div>
+                  <br />
+                  <Button variant="dark" onClick={handleYourShopButton}>
+                    Your Shop
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -155,25 +189,9 @@ const ProfilePage = () => {
         </div>
       </div>
       <div className="footer--pin">
-        <Footer setcurrencyValue={setcurrencyValue} /> 
+        <Footer />
       </div>
 
-      {/* <div class="container-profile-page">
-        <div class="fixed">
-          <img
-            id="profile-image"
-            src={userData.ProfileImage}
-            alt="Avatar"
-            style={{ width: "200px" }}
-          />
-        </div>
-        <div class="flex-item">
-          <h3>{userData.Name}</h3> 
-          
-        </div>
-        <EditIcon />
-      </div>
-      <div class="container-profile-page">Favorite items</div> */}
     </>
   );
 };

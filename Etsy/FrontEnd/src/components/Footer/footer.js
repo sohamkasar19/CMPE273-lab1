@@ -7,10 +7,9 @@ import {
 } from "react-bootstrap";
 import CurrencyModal from "./currencyModal";
 import CopyrightIcon from "@mui/icons-material/Copyright";
-function Footer({ setcurrencyValue }) {
+function Footer() {
   const [currencyvalue, setCurrencyValue] = useState("USD");
   
-  setcurrencyValue(currencyvalue);
   return (
     <>
       <div></div>
