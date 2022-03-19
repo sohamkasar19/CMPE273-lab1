@@ -1,100 +1,179 @@
-import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
-import React from "react";
-import { Button } from "react-bootstrap";
+import {
+  Button,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+} from "@mui/material";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router";
+import ShopItemForm from "./ShopItemForm";
+import ShopImage from "./ShopImage";
+import EditIcon from "@mui/icons-material/Edit";
+import ShopItemFormEdit from "./ShopItemFormEdit";
 
 function ShopPage() {
-
   const { state } = useLocation();
 
-  const itemData = [
-    {
-      img: "https://images.unsplash.com/photo-1551963831-b3b1ca40c98e",
-      title: "Breakfast",
-      author: "@bkristastucchio",
-      rows: 2,
-      cols: 2,
-      featured: true,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1551782450-a2132b4ba21d",
-      title: "Burger",
-      author: "@rollelflex_graphy726",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1522770179533-24471fcdba45",
-      title: "Camera",
-      author: "@helloimnik",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c",
-      title: "Coffee",
-      author: "@nolanissac",
-      cols: 2,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1533827432537-70133748f5c8",
-      title: "Hats",
-      author: "@hjrc33",
-      cols: 2,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62",
-      title: "Honey",
-      author: "@arwinneil",
-      rows: 2,
-      cols: 2,
-      featured: true,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1516802273409-68526ee1bdd6",
-      title: "Basketball",
-      author: "@tjdragotta",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1518756131217-31eb79b20e8f",
-      title: "Fern",
-      author: "@katie_wasserman",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1597645587822-e99fa5d45d25",
-      title: "Mushrooms",
-      author: "@silverdalex",
-      rows: 2,
-      cols: 2,
-    },
-    {
-      img: "https://images.unsplash.com/photo-1567306301408-9b74779a11af",
-      title: "Tomato basil",
-      author: "@shelleypauls",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1471357674240-e1a485acb3e1",
-      title: "Sea star",
-      author: "@peterlaster",
-    },
-    {
-      img: "https://images.unsplash.com/photo-1589118949245-7d38baf380d6",
-      title: "Bike",
-      author: "@southside_customs",
-      cols: 2,
-    },
-  ];
+  const [shopData, setShopData] = useState({});
+  const [shopItems, setShopItems] = useState([]);
+  const [isOwner, setIsOwner] = useState(false);
+  const [ownerData, setOwnerData] = useState({});
+  const [showItemForm, setShowItemForm] = useState(false);
+  const [showItemFormEdit, setShowItemFormEdit] = useState(false);
+
+  const [selectedItem, setSelectedItem] = useState({});
+
+  useEffect(() => {
+    let isSubscribed = true;
+    const fetchAllShopData = async () => {
+      let responseShop = await axios.get("http://localhost:8080/shop/details", {
+        params: {
+          ShopName: state,
+        },
+      });
+
+      await setShopData(responseShop.data);
+      let responseOwnerDetails = await axios.get(
+        "http://localhost:8080/profile/new/id",
+        {
+          params: {
+            ProfileId: responseShop.data.ProfileId,
+          },
+        }
+      );
+      setOwnerData(responseOwnerDetails.data);
+      let responseShopItems = await axios.get(
+        "http://localhost:8080/shop/items",
+        {
+          params: {
+            ShopId: responseShop.data.ShopId,
+          },
+        }
+      );
+      setShopItems(responseShopItems.data);
+      if (localStorage.getItem("user")) {
+        const local = JSON.parse(localStorage.getItem("user"));
+        const token = local.token;
+        let responseIsOwner = await axios.get(
+          "http://localhost:8080/shop/check-owner",
+          {
+            params: {
+              ShopId: responseShop.data.ShopId,
+              token: token,
+            },
+          }
+        );
+        console.log("IsOwner:  " + responseIsOwner.data);
+        setIsOwner(responseIsOwner.data);
+      }
+    };
+    // await axios
+    //   .get("http://localhost:8080/shop/details", {
+    //     params: {
+    //       ShopName: state,
+    //     },
+    //   })
+    //   .then((responseShop) => {
+    //     setShopData(responseShop.data);
+    //   })
+    //   .then((responseShop) => {
+    //     axios
+    //       .get("http://localhost:8080/profile/new/id", {
+    //         params: {
+    //           ProfileId: responseShop.data.ProfileId,
+    //         },
+    //       })
+    //       .then((response) => {
+    //         setOwnerData(response.data);
+    //       });
+    //   })
+    //   .then((responseShop) => {
+    //     axios
+    //       .get("http://localhost:8080/shop/items", {
+    //         params: {
+    //           ShopId: responseShop.data.ShopId,
+    //         },
+    //       })
+    //       .then((response) => {
+    //         setShopItems(response.data);
+    //       });
+    //   })
+    //   .then((responseShop) => {
+    //     if (localStorage.getItem("user")) {
+    //       const local = JSON.parse(localStorage.getItem("user"));
+    //       const token = local.token;
+    //       axios
+    //         .get("http://localhost:8080/shop/check-owner", {
+    //           params: {
+    //             ShopId: responseShop.data.ShopId,
+    //             token: token,
+    //           },
+    //         })
+    //         .then((response) => {
+    //           setIsOwner(response.data);
+    //         });
+    //     }
+    //   });
+    // };
+
+    if (isSubscribed) {
+      fetchAllShopData().catch(console.error());
+    }
+    return () => {
+      isSubscribed = false;
+    };
+  }, [state]);
+
+  const handleImageChange = async (event) => {
+    var profilePhoto = event.target.files[0];
+    var data = new FormData();
+    data.append("photos", profilePhoto);
+    let response = await axios.post(
+      "http://localhost:8080/shop/upload-photo",
+      data
+    );
+    var dataToPost = {
+      ShopImage: response.data,
+      ShopId: shopData.ShopId,
+    };
+    let responseImage = await axios.post(
+      "http://localhost:8080/shop/add-photo",
+      dataToPost
+    );
+    shopData.ShopImage = responseImage.data;
+    // console.log(shopData.ShopImage);
+    setShopData(shopData);
+    window.location.reload(false);
+  };
+
+  let handleEditIcon = (item) => {
+    return function () {
+      setSelectedItem(item);
+      setShowItemFormEdit(true);
+    };
+  };
 
   let ShopItemImages = (
     <>
-      <ImageList cols={4} >
-        {itemData.map((item) => (
-          <ImageListItem key={item.img}>
+      <ImageList cols={4}>
+        {shopItems.map((item) => (
+          <ImageListItem key={item.ItemId}>
             <img
-              src={`${item.img}?w=248&fit=crop&auto=format`}
-              srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
-              alt={item.title}
+              src={item.ItemImage}
+              // src={`${item.img}?w=248&fit=crop&auto=format`}
+              // srcSet={`${item.img}?w=248&fit=crop&auto=format&dpr=2 2x`}
+              alt={item.ItemName}
               loading="lazy"
             />
             <ImageListItemBar
-              title={item.title}
-              subtitle={<span>by: {item.author}</span>}
+              title={item.ItemName}
+              subtitle={"Sales:"}
+              actionIcon={
+                isOwner && (
+                  <EditIcon fontSize="medium" onClick={handleEditIcon(item)} />
+                )
+              }
               position="below"
             />
           </ImageListItem>
@@ -108,24 +187,30 @@ function ShopPage() {
         <div class="container">
           <div className="d-flex justify-content-between">
             <div class="d-flex justify-content-start">
-              <img
-                style={{ width: 150 }}
-                class="shop-icon-external wt-rounded wt-display-block snipcss-Q6mLH snip-img"
-                srcset="https://www.etsy.com/images/avatars/default_shop_icon_500x500.png 500w,
-                                                                                           https://www.etsy.com/images/avatars/default_shop_icon_280x280.png 280w,
-                                                                                           https://www.etsy.com/images/avatars/default_shop_icon_180x180.png 180w,
-                                                                                        https://www.etsy.com/images/avatars/default_shop_icon_75x75.png 75w"
-                src="https://www.etsy.com/images/avatars/default_shop_icon_180x180.png"
-                sizes="(min-width: 900px) 18vw, 30vw"
-                alt=""
-              />
+              {/* {shopImage} */}
+              <ShopImage data={shopData.ShopImage} />
               <div className="d-flex flex-column ">
-                <h1 class="display-4">&nbsp;Fluid jumbotron</h1>
+                <h1 class="display-4">&nbsp;{shopData.ShopName}</h1>
                 <div class="d-flex justify-content-start">
                   &nbsp;&nbsp;&nbsp;&nbsp;
-                  <Button className="rounded-pill" variant="dark">
-                    Edit Shop
-                  </Button>
+                  {isOwner && (
+                    <label htmlFor="upload-photo">
+                      <input
+                        style={{ display: "none" }}
+                        id="upload-photo"
+                        name="upload-photo"
+                        type="file"
+                        onChange={handleImageChange}
+                      />
+                      <Button
+                        variant="contained"
+                        component="span"
+                        style={{ color: "white", backgroundColor: "black" }}
+                      >
+                        Edit Shop Image
+                      </Button>{" "}
+                    </label>
+                  )}
                 </div>
               </div>
             </div>
@@ -133,13 +218,16 @@ function ShopPage() {
               <div className="d-flex flex-column ">
                 <img
                   style={{ width: 100, height: 100 }}
-                  id="avatar_img"
-                  src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
-                  // src={formValue.ProfileImagePreview}
+                  id="profile-image"
+                  // src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
+                  src={ownerData.ProfileImage}
                   alt=""
                   className="img-fluid rounded-circle"
                 />
-                <div className="d-flex justify-content-center">SHop Owner</div>
+                {/* <br/> */}
+                <div className="d-flex justify-content-center">
+                  {ownerData.Name}
+                </div>
               </div>
             </div>
           </div>
@@ -153,17 +241,37 @@ function ShopPage() {
                 <h4>Shop Items</h4>
               </div>
               <div>
-                <Button className="rounded-pill" variant="dark">
-                  Add Item
-                </Button>
+                {isOwner && (
+                  <Button
+                    style={{ color: "white", backgroundColor: "black" }}
+                    // onClick={() => setShowItemForm(true)}
+                    onClick={() => setShowItemForm(true)}
+                  >
+                    Add Item
+                  </Button>
+                )}
+                {/* {addEditItem} */}
+                <ShopItemForm
+                  data={shopData}
+                  show={showItemForm}
+                  onHide={() => setShowItemForm(false)}
+                />
+                <ShopItemFormEdit
+                  data={shopData}
+                  show={showItemFormEdit}
+                  onHide={() => setShowItemFormEdit(false)}
+                  item={selectedItem}
+                  key={selectedItem.ItemId}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="container">
-        <br/><br/>
-      {ShopItemImages}
+        <br />
+        <br />
+        {ShopItemImages}
       </div>
     </>
   );

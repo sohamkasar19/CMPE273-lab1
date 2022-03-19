@@ -294,6 +294,63 @@ app.get("/new", function (req, res) {
     });
   }
 });
+
+app.get("/new/id", function (req, res) {
+  console.log("Inside profile id GET");
+
+  const { ProfileId } = req.query;
+
+
+  // console.log("From Session: "+ res.cookie.access_token)
+  //Query
+
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+      console.log("No error");
+      var sql =
+        "SELECT * from userdetails WHERE ProfileId = " +
+        mysql.escape(ProfileId);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in retrieving profile data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in retrieving profile data");
+        } else {
+          // console.log(result[0].password);
+          // console.log("Profile Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          if (result[0].ProfileImage) {
+            for (const [key, user] of Object.entries(result)) {
+              var file = user.ProfileImage;
+              var filetype = file.split(".").pop();
+              console.log(file);
+              var filelocation = path.join(
+                __dirname + "/../public/uploads",
+                file
+              );
+              var img = fs.readFileSync(filelocation);
+              var base64img = new Buffer(img).toString("base64");
+              user.ProfileImage =
+                "data:image/" + filetype + ";base64," + base64img;
+            }
+          }
+          res.end(JSON.stringify(result[0]));
+        }
+      });
+    }
+  });
+});
 // app.post("/upload-file", upload.array("photos", 5), (req, res) => {
 //   console.log("req.body", req.body);
 //   res.end();

@@ -11,11 +11,37 @@ import {
 import { useNavigate } from "react-router";
 import LoginSignupButton from "../loginSignup/loginSignupButton";
 import LogoutButton from "../loginSignup/logoutButton";
+import StoreIcon from '@mui/icons-material/Store';
+import axios from "axios";
 
 function NavBar() {
   let navigate = useNavigate();
   let LoginLogOutButton = null;
   let Favourite = null;
+  let ShopButton = null;
+
+
+  const handleShopIconClick = async () => {
+    const local = JSON.parse(localStorage.getItem("user"));
+    const token = local.token;
+    let response = await axios.get(
+      "http://localhost:8080/shop/check-shop-exists",
+      {
+        params: {
+          token: token
+        },
+      }
+    );
+    // console.log(response.data === "Not Found");
+    if(response.data === "Not Found") {
+      navigate("/name-your-shop");
+    }else {
+      navigate("/your-shop", {
+        state: response.data,
+      });
+    }
+    
+  }
   if (localStorage.getItem("user")) {
     console.log("Able to read cookie");
     Favourite = (
@@ -34,6 +60,14 @@ function NavBar() {
         </Nav.Link>
       </div>
     );
+    ShopButton = (
+      <div>
+        <Nav.Link  className="border-left pl-2 ms-auto">
+          <StoreIcon fontSize="medium" sx={{width: "20", height:"26", color:"black"}} onClick={handleShopIconClick} />
+          &nbsp;&nbsp;
+        </Nav.Link>
+      </div>
+    )
     LoginLogOutButton = (
       <Dropdown className="border-left pl-2 ms-auto">
         <Dropdown.Toggle variant="light" id="dropdown-basic">
@@ -119,6 +153,7 @@ function NavBar() {
                 </Button>
               </Form>
               {LoginLogOutButton}
+              {ShopButton}
               {Favourite}
               &nbsp;&nbsp;&nbsp;
               <Nav.Link >

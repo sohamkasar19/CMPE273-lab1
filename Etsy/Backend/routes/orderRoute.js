@@ -105,8 +105,8 @@ app.get("/all-orders", function (req, res) {
   console.log("Inside all order details  GET");
   //   console.log("Request Body ItemId: " + req.query.ItemId);
   const token = req.query.token;
-  console.log(token);
-  let decode = null;
+  console.log(token );
+  let decode = null; 
   try {
     decode = jwt.verify(token, process.env.SECRET);
   } catch (error) {

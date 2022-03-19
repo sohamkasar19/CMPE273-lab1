@@ -6,14 +6,30 @@ const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
 var jwt = require("jsonwebtoken");
+var crypto = require("crypto");
 
 var connection = require("../dbConnection.js");
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
-  destination: "./public/items/",
+  destination: "./public/uploads/",
+  // filename: function (req, file, cb) {
+  //   cb(null, file.originalname);
+  // },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    if (
+      file.mimetype !== "image/png" &&
+      file.mimetype !== "image/jpg" &&
+      file.mimetype !== "image/jpeg"
+    ) {
+      var err = new Error();
+      err.code = "filetype";
+      return cb(err);
+    } else {
+      var fileName = crypto.randomBytes(10).toString("hex");
+      file.filename = fileName;
+      cb(null, fileName + ".jpg");
+    }
   },
 });
 
@@ -40,6 +56,11 @@ function checkFileType(file, cb) {
     cb("Error: Images Only!");
   }
 }
+
+app.post("/upload-photo", upload.single("photos"), (req, res) => {
+  console.log("req.body", req.body);
+  res.end(res.req.file.filename);
+});
 
 app.get("/all-images", function (req, res) {
   console.log("Inside download all item images GET");
@@ -71,7 +92,10 @@ app.get("/all-images", function (req, res) {
             var file = item.ItemImage;
             var filetype = file.split(".").pop();
             console.log(file);
-            var filelocation = path.join(__dirname + "/../public/items", file);
+            var filelocation = path.join(
+              __dirname + "/../public/uploads",
+              file
+            );
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
@@ -117,7 +141,7 @@ app.get("/details", function (req, res) {
             var file = item.ItemImage;
             var filetype = file.split(".").pop();
             console.log(file);
-            var filelocation = path.join(__dirname + "/../public/items", file);
+            var filelocation = path.join(__dirname + "/../public/uploads", file);
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
@@ -142,7 +166,7 @@ app.get("/favouritesImages", function (req, res) {
   let ProfileId = decode.id;
   connection.getConnection(function (err, conn) {
     if (err) {
-      console.log("Error in creating connection!");
+      console.log("Error in creating connection! " + err);
       res.writeHead(400, {
         "Content-type": "text/plain",
       });
@@ -170,7 +194,7 @@ app.get("/favouritesImages", function (req, res) {
             var file = item.ItemImage;
             var filetype = file.split(".").pop();
             console.log(file);
-            var filelocation = path.join(__dirname + "/../public/items", file);
+            var filelocation = path.join(__dirname + "/../public/uploads", file);
             var img = fs.readFileSync(filelocation);
             var base64img = new Buffer(img).toString("base64");
             item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
@@ -248,21 +272,20 @@ app.post("/set-remove-favourite", function (req, res) {
       });
       res.end("Error in creating connection!");
     } else {
-      
-      if(isDelete) {
+      if (isDelete) {
         var sql =
-        "DELETE FROM favourites WHERE ProfileId = " +
-        mysql.escape(ProfileId) +
-        " AND ItemId = " +
-        mysql.escape(ItemId) +
-        ";";
-      }else {
+          "DELETE FROM favourites WHERE ProfileId = " +
+          mysql.escape(ProfileId) +
+          " AND ItemId = " +
+          mysql.escape(ItemId) +
+          ";";
+      } else {
         var sql =
-        "INSERT INTO favourites(ProfileId, ItemId) VALUES(" +
-        mysql.escape(ProfileId) +
-        "," +
-        mysql.escape(ItemId) +
-        ");";
+          "INSERT INTO favourites(ProfileId, ItemId) VALUES(" +
+          mysql.escape(ProfileId) +
+          "," +
+          mysql.escape(ItemId) +
+          ");";
       }
       conn.query(sql, function (err, result) {
         if (err) {
@@ -280,6 +303,55 @@ app.post("/set-remove-favourite", function (req, res) {
 
           //   console.log(result);
           res.end("Set remove Favourite Done");
+        }
+      });
+    }
+  });
+});
+
+app.post("/add", function (req, res) {
+  console.log("Inside add item  POST");
+  const itemToAdd = req.body;
+
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      var sql =
+        "INSERT INTO itemdetails(ItemName,ShopId,QuantityAvailable,Category,Price,ItemImage,Description) VALUES(" +
+        mysql.escape(itemToAdd.ItemName) +
+        "," +
+        mysql.escape(itemToAdd.ShopId) +
+        "," +
+        mysql.escape(itemToAdd.QuantityAvailable) +
+        "," +
+        mysql.escape(itemToAdd.Category) +
+        ", " +
+        mysql.escape(itemToAdd.Price) +
+        ", " +
+        mysql.escape(itemToAdd.ItemImage) +
+        ", " +
+        mysql.escape(itemToAdd.Description) +
+        "); ";
+        console.log(sql);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in add item data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in add item data");
+        } else {
+
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+
+          res.end("Item Added");
         }
       });
     }

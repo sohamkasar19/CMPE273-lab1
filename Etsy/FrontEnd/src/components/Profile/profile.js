@@ -84,7 +84,7 @@ export const Profile = () => {
   if (userData.ProfileImage) {
     profileImageData = (
       <img
-        id="avatar_img"
+        id="profile-image"
         // src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
         src={userData.ProfileImage}
         alt=""

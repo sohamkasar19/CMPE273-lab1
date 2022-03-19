@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FormControl, InputGroup } from "react-bootstrap";
 import Button from "@material-ui/core/Button";
 import CloudUploadIcon from "@material-ui/icons/CloudUpload";
@@ -9,40 +9,38 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 
 function ShopName() {
+  
   const navigate = useNavigate();
   const [isAvailable, setIsAvailable] = useState("");
   const [shopName, setShopName] = useState("");
-  let availabilityStatus = null;
-  if (isAvailable === "true") {
-    availabilityStatus = (
-      <Button
-        variant="contained"
-        color="secondary"
-        style={{
-          borderRadius: 35,
-          backgroundColor: "#6aa84f",
-        }}
-        startIcon={<CheckIcon />}
-      >
-        Available
-      </Button>
-    );
-  }
-  if (isAvailable === "false") {
-    availabilityStatus = (
-      <Button
-        variant="contained"
-        color="secondary"
-        style={{
-          borderRadius: 35,
-          backgroundColor: "#cc0000",
-        }}
-        startIcon={<ClearIcon />}
-      >
-        Not Available
-      </Button>
-    );
-  }
+
+  
+ 
+  useEffect(() => {
+    const fetchIfShopExists = async () => {
+      const local = JSON.parse(localStorage.getItem("user"));
+      const token = local.token;
+      let response = await axios.get(
+        "http://localhost:8080/shop/check-shop-exists",
+        {
+          params: {
+            token: token
+          },
+        }
+      );
+      if(response.data !== "Not Found") {
+        navigate('/your-shop' , {
+          state: response.data,
+        });
+      }
+      
+    }
+    fetchIfShopExists().catch(console.error);
+
+  }, [navigate])
+
+  
+  
 
   let checkShopName = async () => {
     const local = JSON.parse(localStorage.getItem("user"));
@@ -56,13 +54,25 @@ function ShopName() {
         },
       }
     );
-    if(response.data === "true") {
-        setIsAvailable(true);
-    }
-    else {
-        setIsAvailable(false);
-    }
+    setIsAvailable(response.data);
   };
+
+  let addShopName = async () => {
+    const local = JSON.parse(localStorage.getItem("user"));
+    const token = local.token;
+    let response = await axios.get(
+      "http://localhost:8080/shop/add-shop-name",
+      {
+        params: {
+          token: token,
+          nameToCheck: shopName,
+        },
+      }
+    );
+    navigate("/your-shop", {
+      state: shopName,
+    });
+  }
 
   const handleChangeShopName = (event) => {
     setShopName(event.target.value);
@@ -70,14 +80,15 @@ function ShopName() {
 
   const handleClickContinue = () => {
     if (isAvailable === "true") {
-      navigate("/your-shop", {
-        state: shopName,
-      });
+      addShopName();
     }
   };
   const handleClickCheckAvailable = () => {
-    checkShopName();
-    console.log(isAvailable);
+    if(shopName.length !== 0) {
+      checkShopName();
+    }
+    
+    console.log( isAvailable);
   };
 
   return (
@@ -85,18 +96,19 @@ function ShopName() {
       <br />
       <br />
       <div className="card text-center" style={{ width: "50rem" }}>
-        <div class="card-header">
+        <div className="card-header">
           <h2>Name Your Shop</h2>
         </div>
-        <div class="card-body">
+        <div className="card-body">
           <InputGroup className="col-md-4">
             <FormControl
               placeholder="Enter Shop Name"
               style={{ borderRadius: 35 }}
               value={shopName}
               onChange={handleChangeShopName}
+              required
             />
-            {!isAvailable && (
+            {isAvailable === false && (
               <Button
                 variant="contained"
                 color="secondary"
@@ -109,17 +121,17 @@ function ShopName() {
                 Not Available
               </Button>
             )}
-            {isAvailable && (
+            {isAvailable === true && (
               <Button
                 variant="contained"
                 color="secondary"
                 style={{
                   borderRadius: 35,
-                  backgroundColor: "#cc0000",
+                  backgroundColor: "#6aa84f",
                 }}
-                startIcon={<ClearIcon />}
+                startIcon={<CheckIcon />}
               >
-                Not Available
+                Available
               </Button>
             )}
             <Button
@@ -138,17 +150,19 @@ function ShopName() {
 
         <div className="card-footer text-muted">
           <div className="d-flex justify-content-end">
-            <Button
-              style={{
-                borderRadius: 35,
-                backgroundColor: "#000000",
-                color: "#ffffff",
-              }}
-              variant="contained"
-              onClick={handleClickContinue}
-            >
-              Continue
-            </Button>
+            {isAvailable === true && (
+              <Button
+                style={{
+                  borderRadius: 35,
+                  backgroundColor: "#000000",
+                  color: "#ffffff",
+                }}
+                variant="contained"
+                onClick={handleClickContinue}
+              >
+                Save and Continue
+              </Button>
+            )}
           </div>
         </div>
       </div>
