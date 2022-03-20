@@ -6,5 +6,6 @@
         "port" : 3306,
         "database" : "etsy"
     },
-    "frontEnd" : "http://localhost:3000"
+    
+    "frontEnd" : "http://54.234.193.163:3000"
 }
