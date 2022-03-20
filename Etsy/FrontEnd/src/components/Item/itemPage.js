@@ -11,6 +11,7 @@ import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { Button, ImageListItem, ImageListItemBar } from "@mui/material";
 import Favourite from "../Home/favourite";
+import {API} from '../../Backend';
 
 const Item = () => {
   // let resObj = {};
@@ -28,7 +29,7 @@ const Item = () => {
   useEffect(() => {
     let isSubscribed = true;
     const fetchItemData = async () => {
-      let responseItem = await axios.get("http://localhost:8080/item/details", {
+      let responseItem = await axios.get(API+"/item/details", {
         params: {
           ItemId: state,
         },
@@ -43,7 +44,7 @@ const Item = () => {
       //   }
       // });
       let responseShop = await axios.get(
-        "http://localhost:8080/shop/details-by-id",
+        API+"/shop/details-by-id",
         {
           params: {
             ShopId: responseItem.data[0].ShopId,

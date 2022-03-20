@@ -9,6 +9,7 @@ import EuroIcon from "@mui/icons-material/Euro";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import { useSelector } from "react-redux";
+import {API} from '../../Backend';
 
 
 const PurchaseDetailsPage = () => {
@@ -28,7 +29,7 @@ const PurchaseDetailsPage = () => {
     console.log(state);
     const fetchItemList = async () => {
       const responseData = await axios.get(
-        "http://localhost:8080/order/details",
+        API+"/order/details",
         {
           params: {
             OrderId: state.OrderId,

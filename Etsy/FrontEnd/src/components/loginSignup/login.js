@@ -6,7 +6,9 @@ import {
   Label,
   Input,
   Button,
+  Modal,
 } from "reactstrap";
+import {API} from '../../Backend';
 
 import axios from "axios";
 
@@ -31,16 +33,13 @@ const LoginForm = () => {
     }
   };
 
-  
-
-
   const handleSubmit = (event) => {
     event.preventDefault();
     var data = {
       Email: formValue.email,
       Password: formValue.password,
     };
-    axios.post("http://localhost:8080/login", data).then((response) => {
+    axios.post(API+"/login", data).then((response) => {
       if (response.status === 200) {
         console.log("before local storage: " + JSON.stringify(response.data));
         localStorage.setItem("user", JSON.stringify(response.data));
@@ -55,9 +54,7 @@ const LoginForm = () => {
   };
 
   const handleChange = (event) => {
-  
     if (event.target.name === "email") {
-      
       validateEmail(event);
     }
     setformValue({
@@ -113,6 +110,7 @@ const LoginForm = () => {
         </Button>
       </div>
     </Form>
+   
   );
 };
 export default LoginForm;

@@ -18,11 +18,12 @@ import { useNavigate } from "react-router";
 import Favourite from "./favourite";
 import Heart from "react-animated-heart";
 import { useSelector } from "react-redux";
+import {API} from '../../Backend';
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [favouritesList, setFavouritesList] = useState([]);
-
+  console.log("API"+API);
   
 
   const reduxState = useSelector((state) => state);
@@ -59,7 +60,7 @@ const HomePage = () => {
     const fetchUserData = async () => {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
-      let responseData = await axios.get("http://localhost:8080/profile", {
+      let responseData = await axios.get(API+"/profile", {
         params: {
           token: token,
         },
@@ -71,7 +72,7 @@ const HomePage = () => {
     };
     const fetchItemImages = async () => {
       let responseData = await axios.get(
-        "http://localhost:8080/item/all-images"
+        API+"/item/all-images"
       );
       setItemList(responseData.data);
     };
@@ -79,7 +80,7 @@ const HomePage = () => {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
       let responseData = await axios.get(
-        "http://localhost:8080/item/favourites",
+        API+"/item/favourites",
         {
           params: {
             token: token,

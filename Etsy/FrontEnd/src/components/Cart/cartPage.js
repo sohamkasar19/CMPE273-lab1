@@ -11,6 +11,7 @@ import { Button } from "react-bootstrap";
 import EuroIcon from "@mui/icons-material/Euro";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import {API} from '../../Backend';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -23,8 +24,8 @@ const Cart = () => {
   const [currencyvalue, setcurrencyValue] = useState(reduxState.currency);
 
   useEffect(() => {
-    if(!localStorage.getItem("user")) {
-      navigate('/home');
+    if (!localStorage.getItem("user")) {
+      navigate("/home");
       window.location.reload(false);
     }
     setcurrencyValue(reduxState.currency);
@@ -47,13 +48,29 @@ const Cart = () => {
         total: cartDetails.total,
         token: token,
       };
-      axios.post("http://localhost:8080/order/add", data).then((response) => {
-        if (response.status === 200) {
-          dispatch(checkoutCart());
-          navigate("/purchase");
-          // console.log("Axios post done from Checkout");
-        }
-      });
+
+      axios
+        .get(API+"/profile/check-address", {
+          params: {
+            token: token,
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          if (response.data) {
+            axios
+              .post(API+"/order/add", data)
+              .then((response) => {
+                if (response.status === 200) {
+                  dispatch(checkoutCart());
+                  navigate("/purchase");
+                  // console.log("Axios post done from Checkout");
+                }
+              });
+          }else {
+            alert("You don't have any delivery address... Edit in your profile");
+          }
+        });
     } else {
       alert("Your cart is empty...");
     }
@@ -82,7 +99,10 @@ const Cart = () => {
               </div>
 
               <div className="prodTotal cartSection">
-                <p>{currencySymbol}{item.quantityInCart * item.Price}</p>
+                <p>
+                  {currencySymbol}
+                  {item.quantityInCart * item.Price}
+                </p>
               </div>
             </div>
           </li>
@@ -105,23 +125,28 @@ const Cart = () => {
               <ul className="cartWrap">{addItems}</ul>
             </div>
 
-          {cartDetails.addedItems.length !== 0 && (<div className="subtotal cf">
-              <ul>
-                <li className="totalRow final">
-                  <span className="label">Total</span>
-                  <span className="value">{currencySymbol}{cartDetails.total}</span>
-                </li>
-                <li className="totalRow final">
-                  <Button
-                    variant="dark"
-                    onClick={handleCheckout}
-                    className="btn continue"
-                  >
-                    Checkout
-                  </Button>
-                </li>
-              </ul>
-            </div>)}
+            {cartDetails.addedItems.length !== 0 && (
+              <div className="subtotal cf">
+                <ul>
+                  <li className="totalRow final">
+                    <span className="label">Total</span>
+                    <span className="value">
+                      {currencySymbol}
+                      {cartDetails.total.toFixed(2)}
+                    </span>
+                  </li>
+                  <li className="totalRow final">
+                    <Button
+                      variant="dark"
+                      onClick={handleCheckout}
+                      className="btn continue"
+                    >
+                      Checkout
+                    </Button>
+                  </li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>

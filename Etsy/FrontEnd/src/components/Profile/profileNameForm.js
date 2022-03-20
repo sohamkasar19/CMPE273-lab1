@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import axios from "axios";
+import {API} from '../../Backend';
 
 const ProfileNameForm = () => {
   const [formValue, setformValue] = useState({
@@ -14,7 +15,7 @@ const ProfileNameForm = () => {
     // const token = local["user"];
     console.log("Inside useEffect profile" + local.user.token);
     axios
-      .get("http://localhost:8080/profile", {
+      .get(API+"/profile", {
         params: {
           token: token,
         },
@@ -39,7 +40,7 @@ const ProfileNameForm = () => {
     var data = {
       Name: formValue.firstName + " " + formValue.lastName,
     };
-    axios.post("http://localhost:8080/profile", data).then((response) => {
+    axios.post(API+"/profile", data).then((response) => {
       if (response.status === 200) {
         console.log("Axios post from profile name submit");
       }

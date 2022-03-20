@@ -14,6 +14,7 @@ import LogoutButton from "../loginSignup/logoutButton";
 import StoreIcon from "@mui/icons-material/Store";
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import axios from "axios";
+import {API} from '../../Backend';
 
 function NavBar() {
   let navigate = useNavigate();
@@ -27,22 +28,36 @@ function NavBar() {
   const handleShopIconClick = async () => {
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
-    let response = await axios.get(
-      "http://localhost:8080/shop/check-shop-exists",
-      {
-        params: {
-          token: token,
-        },
-      }
-    );
-    // console.log(response.data === "Not Found");
-    if (response.data === "Not Found") {
-      navigate("/name-your-shop");
-    } else {
-      navigate("/your-shop", {
-        state: response.data,
-      });
-    }
+    axios
+        .get(API+"/profile/check-address", {
+          params: {
+            token: token,
+          },
+        }).then((responseCheck) => {
+          if(responseCheck.data) {
+            axios.get(
+              API+"/shop/check-shop-exists",
+              {
+                params: {
+                  token: token,
+                },
+              }
+            ).then((response) => {
+              if (response.data === "Not Found") {
+                navigate("/name-your-shop");
+              } else {
+                navigate("/your-shop", {
+                  state: response.data,
+                });
+              }
+            })
+            // console.log(response.data === "Not Found");
+          }
+          else{
+            alert("You don't have any delivery address... Edit in your profile");
+          }
+        })
+    
   };
   if (localStorage.getItem("user")) {
     Favourite = (

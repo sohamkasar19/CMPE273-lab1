@@ -1,7 +1,8 @@
+import axios from "axios";
 import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 import LoginForm from "./login";
-import SignupForm from "./signup";
+import SignupForm from "./SignupForm";
 
 function LoginSignupButton() {
   const [showLogin, setShowLogin] = useState(false);
@@ -11,8 +12,10 @@ function LoginSignupButton() {
 
   const [showSignup, setShowSignup] = useState(false);
   const handleShowSignup = () => {
+    
     setShowLogin(false);
     setShowSignup(true);
+    console.log("register "+ showSignup);
   };
   const handleCloseSignup = () => setShowSignup(false);
 
@@ -28,14 +31,19 @@ function LoginSignupButton() {
       <Modal show={showLogin} onHide={handleCloseLogin}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Login
-            &nbsp;&nbsp;&nbsp;
+            Login &nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <Button className="float-right" variant="outline-dark" size="sm" onClick={handleShowSignup}  style={{ marginLeft: "auto" }}>
+            <Button
+              className="float-right"
+              variant="outline-dark"
+              size="sm"
+              onClick={handleShowSignup}
+              style={{ marginLeft: "auto" }}
+            >
               {" "}
               Register
-            </Button>
+            </Button>  
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -52,6 +60,7 @@ function LoginSignupButton() {
         </Modal.Header>
         <Modal.Body>
           <SignupForm />
+          
         </Modal.Body>
       </Modal>
     </>

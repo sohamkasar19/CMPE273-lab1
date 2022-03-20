@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Heart from "react-animated-heart";
+import {API} from '../../Backend';
 
 function Favourite(props) {
   const [isFavourite, setFavourite] = useState(false);
@@ -11,7 +12,7 @@ function Favourite(props) {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
       let responseData = await axios.get(
-        "http://localhost:8080/item/favourites",
+        API+"/item/favourites",
         {
           params: {
             token: token,
@@ -45,7 +46,7 @@ function Favourite(props) {
           ItemId: props.data.ItemId,
           isDelete: true,
         };
-        axios.post("http://localhost:8080/item/set-remove-favourite", data);
+        axios.post(API+"/item/set-remove-favourite", data);
       } else {
         setFavourite(true);
          data = {
@@ -53,7 +54,7 @@ function Favourite(props) {
           ItemId: props.data.ItemId,
           isDelete: false,
         };
-        axios.post("http://localhost:8080/item/set-remove-favourite", data);
+        axios.post(API+"/item/set-remove-favourite", data);
       }
     }
     else {

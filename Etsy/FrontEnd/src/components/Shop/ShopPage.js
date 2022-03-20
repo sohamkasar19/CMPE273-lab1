@@ -13,7 +13,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import ShopItemFormEdit from "./ShopItemFormEdit";
 import NavBar from "../NavBar/NavBar";
 import Footer from "../Footer/footer";
-
+import {API} from '../../Backend';
 
 function ShopPage() {
   const navigate = useNavigate();
@@ -33,13 +33,10 @@ function ShopPage() {
   // const [currencyvalue, setcurrencyValue] = useState(reduxState.currency);
 
   useEffect(() => {
-    if(!localStorage.getItem("user")) {
-      navigate('/home');
-      window.location.reload(false);
-    }
+    
     let isSubscribed = true;
     const fetchAllShopData = async () => {
-      let responseShop = await axios.get("http://localhost:8080/shop/details", {
+      let responseShop = await axios.get(API+"/shop/details", {
         params: {
           ShopName: state,
         },
@@ -47,7 +44,7 @@ function ShopPage() {
 
       await setShopData(responseShop.data);
       let responseOwnerDetails = await axios.get(
-        "http://localhost:8080/profile/new/id",
+        API+"/profile/new/id",
         {
           params: {
             ProfileId: responseShop.data.ProfileId,
@@ -56,7 +53,7 @@ function ShopPage() {
       );
       setOwnerData(responseOwnerDetails.data);
       let responseShopItems = await axios.get(
-        "http://localhost:8080/shop/items",
+        API+"/shop/items",
         {
           params: {
             ShopId: responseShop.data.ShopId,
@@ -75,7 +72,7 @@ function ShopPage() {
         const local = JSON.parse(localStorage.getItem("user"));
         const token = local.token;
         let responseIsOwner = await axios.get(
-          "http://localhost:8080/shop/check-owner",
+          API+"/shop/check-owner",
           {
             params: {
               ShopId: responseShop.data.ShopId,
@@ -101,7 +98,7 @@ function ShopPage() {
     var data = new FormData();
     data.append("photos", profilePhoto);
     let response = await axios.post(
-      "http://localhost:8080/shop/upload-photo",
+      API+"/shop/upload-photo",
       data
     );
     var dataToPost = {
@@ -109,7 +106,7 @@ function ShopPage() {
       ShopId: shopData.ShopId,
     };
     let responseImage = await axios.post(
-      "http://localhost:8080/shop/add-photo",
+      API+"/shop/add-photo",
       dataToPost
     );
     shopData.ShopImage = responseImage.data;

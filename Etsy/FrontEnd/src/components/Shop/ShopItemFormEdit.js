@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import {API} from '../../Backend';
 
 function ShopItemFormEdit(props) {
 //   console.log(props.item);
@@ -22,7 +23,7 @@ function ShopItemFormEdit(props) {
       var data = new FormData();
       data.append("photos", itemPhoto);
       let response = await axios.post(
-        "http://localhost:8080/item/upload-photo",
+        API+"/item/upload-photo",
         data
       );
       console.log(response.data);
@@ -45,7 +46,7 @@ function ShopItemFormEdit(props) {
   const handleItemSubmit = async (e) => {
     e.preventDefault();
     
-    await axios.post("http://localhost:8080/item/edit", itemForm);
+    await axios.post(API+"/item/edit", itemForm);
     if(itemForm.ItemImage.length !== 0) {
       window.location.reload(false);
     }

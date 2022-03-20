@@ -7,6 +7,7 @@ import axios from "axios";
 import { useNavigate } from "react-router";
 import NavBar from "../NavBar/NavBar";
 import Footer from "../Footer/footer";
+import {API} from '../../Backend';
 
 function ShopName() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ function ShopName() {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
       let response = await axios.get(
-        "http://localhost:8080/shop/check-shop-exists",
+        API+"/shop/check-shop-exists",
         {
           params: {
             token: token,
@@ -43,7 +44,7 @@ function ShopName() {
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
     let response = await axios.get(
-      "http://localhost:8080/shop/check-shop-name",
+      API+"/shop/check-shop-name",
       {
         params: {
           token: token,
@@ -61,7 +62,7 @@ function ShopName() {
       token: token,
       nameToAdd: shopName,
     };
-    await axios.post("http://localhost:8080/shop/add-shop-name", data);
+    await axios.post(API+"/shop/add-shop-name", data);
     navigate("/your-shop", {
       state: shopName,
     });

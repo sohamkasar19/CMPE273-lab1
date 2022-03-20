@@ -46,7 +46,7 @@ app.post('/', function (req, res) {
                     res.end('Invalid Credentials!');
                 }
                 else {
-                    // console.log(result[0].password);
+                    console.log(req.body.Password);
                     if (result.length == 0 || bcrypt.compareSync(req.body.Password, result[0].Password)) {
                         res.writeHead(201, {
                             'Content-type': 'text/plain'

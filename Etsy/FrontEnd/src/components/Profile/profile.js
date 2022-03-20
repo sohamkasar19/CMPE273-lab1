@@ -5,6 +5,7 @@ import NavBar from "../NavBar/NavBar";
 import "./profile.css";
 import { CountriesData } from './Countries'
 import { useNavigate } from "react-router";
+import {API} from '../../Backend';
 
 export const Profile = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export const Profile = () => {
     let isSubscribed = true;
 
     const getUserDetails = async () => {
-      let response = await axios.get("http://localhost:8080/profile/new", {
+      let response = await axios.get(API+"/profile/new", {
         params: {
           token: token,
         },
@@ -41,7 +42,7 @@ export const Profile = () => {
       var data = new FormData();
       data.append("photos", profilePhoto);
       let response = await axios.post(
-        "http://localhost:8080/profile/upload-photo",
+        API+"/profile/upload-photo",
         data
       );
       setUserData({
@@ -71,9 +72,10 @@ export const Profile = () => {
       ProfileImage: userData.ProfileImageName,
       Phonenumber: userData.Phonenumber,
     };
-    axios.post("http://localhost:8080/profile", data).then((response) => {
+    axios.post(API+"/profile", data).then((response) => {
       if (response.status === 200) {
         console.log("Axios post from profile submit");
+        navigate('/profile-page')
       }
     });
     event.preventDefault();
@@ -365,10 +367,7 @@ export const Profile = () => {
                     {CountriesData.data.map((item) => (
                         <option value={item.country}>{item.country}</option>
                     ))}
-                    <option value="volvo">Volvo</option>
-                    <option value="saab">Saab</option>
-                    <option value="mercedes">Mercedes</option>
-                    <option value="audi">Audi</option>
+                   
                   </select>
                 </div>
               </div>

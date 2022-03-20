@@ -5,6 +5,7 @@ import NavBar from "../NavBar/NavBar";
 import "../Home/home.css";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
+import {API} from '../../Backend';
 
 
 const PurchasePage = () => {
@@ -22,7 +23,7 @@ const PurchasePage = () => {
     let isSubscribed = true;
     const getPurchaseData = async () => {
       const responseData = await axios.get(
-        "http://localhost:8080/order/all-orders",
+        API+"/order/all-orders",
         {
           params: {
             token: token,

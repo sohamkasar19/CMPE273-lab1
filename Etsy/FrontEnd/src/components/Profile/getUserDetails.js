@@ -1,9 +1,9 @@
 import axios from "axios";
-
+import {API} from '../../Backend';
 export const GetUserDetails = (token) => {
     
     axios
-      .get("http://localhost:8080/profile", {
+      .get(API+"/profile", {
         params: {
           token: token,
         },

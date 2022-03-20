@@ -4,6 +4,7 @@ import { useLocation } from "react-router";
 import Footer from "../Footer/footer";
 import NavBar from "../NavBar/NavBar";
 import SearchListComponent from "./SearchListComponent";
+import {API} from '../../Backend';
 
 function SearchPage() {
   const { state } = useLocation();
@@ -15,7 +16,7 @@ function SearchPage() {
 
     let fetchSearchResults = async () => {
       let responseSearch = await axios.get(
-        "http://localhost:8080/item/search",
+        API+"/item/search",
         {
           params: {
             searchWord: state,

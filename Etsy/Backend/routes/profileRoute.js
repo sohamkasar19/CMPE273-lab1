@@ -12,7 +12,6 @@ var connection = require("./../dbConnection.js");
 // const { log } = require("console");
 const jwt = require("jsonwebtoken");
 
-
 // Set The Storage Engine
 const storage = multer.diskStorage({
   destination: "./public/uploads/",
@@ -65,7 +64,6 @@ app.post("/upload-photo", upload.single("photos"), (req, res) => {
   console.log("req.body", req.body);
   res.end(res.req.file.filename);
 });
-
 
 //download photo
 app.get("/download-photo/", (req, res) => {
@@ -178,7 +176,8 @@ app.post("/", (req, res) => {
           ", Phonenumber = " +
           mysql.escape(req.body.Phonenumber) +
           " WHERE ProfileId = " +
-          mysql.escape(req.body.ProfileId) +";";
+          mysql.escape(req.body.ProfileId) +
+          ";";
       } else {
         var sql =
           "UPDATE userdetails SET Email = " +
@@ -200,17 +199,22 @@ app.post("/", (req, res) => {
           ", Phonenumber = " +
           mysql.escape(req.body.Phonenumber) +
           " WHERE ProfileId = " +
-          mysql.escape(req.body.ProfileId)+";";
+          mysql.escape(req.body.ProfileId) +
+          ";";
       }
-     console.log(sql);
+      console.log(sql);
       conn.query(sql, (err, result) => {
         if (err) {
           console.log("User details add" + err);
           res.writeHead(400, {
             "Content-Type": "text/plain",
           });
-          res.end("Invalid Credentials!");
+          res.end("User details add err");
         } else {
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          res.end("Profile Post done");
           console.log("Profile POST done");
         }
       });
@@ -287,8 +291,8 @@ app.get("/new", function (req, res) {
           }
         });
       }
+      conn.release();
     });
-    conn.release();
   }
 });
 
@@ -349,5 +353,66 @@ app.get("/new/id", function (req, res) {
   });
 });
 
+app.get("/check-address", function (req, res) {
+  console.log("Inside profile address GET");
+  // console.log("Request Body JWT TOKEN: " + req.query.token);
+
+  if (!req.query.token) {
+    console.log("No token");
+    res.writeHead(400, {
+      "Content-type": "text/plain",
+    });
+    res.end("No token");
+  } else {
+    const token = req.query.token;
+    // console.log("Token : " + token);
+    let decode = null;
+    try {
+      decode = jwt.verify(token, process.env.SECRET);
+    } catch (error) {
+      return res.status(400).send("invalid token");
+    }
+    let ProfileId = decode.id;
+    // console.log("From Session: "+ res.cookie.access_token)
+    //Query
+
+    connection.getConnection(function (err, conn) {
+      if (err) {
+        console.log("Error in creating connection!");
+        res.writeHead(400, {
+          "Content-type": "text/plain",
+        });
+        res.end("Error in creating connection!");
+      } else {
+        //Login validation query
+        // console.log("No error");
+        var sql =
+          "SELECT Address from userdetails WHERE ProfileId = " +
+          mysql.escape(ProfileId);
+        conn.query(sql, function (err, result) {
+          if (err) {
+            console.log("Error in retrieving profile data");
+            res.writeHead(400, {
+              "Content-type": "text/plain",
+            });
+            res.end("Error in retrieving profile data");
+          } else {
+            // console.log(result[0].password);
+            console.log("Profile Data: ", result);
+            res.writeHead(200, {
+              "Content-type": "application/json",
+            });
+            if (result[0].Address) {
+              res.end("true");
+            } else {
+              res.end("false");
+            }
+          }
+        });
+      }
+      conn.release();
+    });
+  }
+});
 
 module.exports = app;

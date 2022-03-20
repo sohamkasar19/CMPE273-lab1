@@ -13,6 +13,7 @@ import {
   ImageListItemBar,
 } from "@mui/material";
 import { Button } from "react-bootstrap";
+import {API} from '../../Backend';
 
 
 const ProfilePage = () => {
@@ -34,7 +35,7 @@ const ProfilePage = () => {
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
     const fetchUserData = async () => {
-      let responseData = await axios.get("http://localhost:8080/profile/new", {
+      let responseData = await axios.get(API+"/profile/new", {
         params: {
           token: token,
         },
@@ -45,7 +46,7 @@ const ProfilePage = () => {
       const local = JSON.parse(localStorage.getItem("user"));
       const token = local.token;
       let responseData = await axios.get(
-        "http://localhost:8080/item/favouritesImages",
+        API+"/item/favouritesImages",
         {
           params: {
             token: token,
@@ -58,7 +59,7 @@ const ProfilePage = () => {
     //   const local = JSON.parse(localStorage.getItem("user"));
     //   const token = local.token;
     //   let responseData = await axios.get(
-    //     "http://localhost:8080/shop/details-by-id",
+    //     API+"/shop/details-by-id",
     //     {
     //       params: {
     //         token: token,
@@ -83,22 +84,35 @@ const ProfilePage = () => {
   const handleYourShopButton = async () => {
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
-    let response = await axios.get(
-      "http://localhost:8080/shop/check-shop-exists",
-      {
-        params: {
-          token: token,
-        },
-      }
-    );
-    // console.log(response.data === "Not Found");
-    if (response.data === "Not Found") {
-      navigate("/name-your-shop");
-    } else {
-      navigate("/your-shop", {
-        state: response.data,
-      });
-    }
+    axios
+        .get(API+"/profile/check-address", {
+          params: {
+            token: token,
+          },
+        }).then((responseCheck) => {
+          if(responseCheck.data) {
+            axios.get(
+              API+"/shop/check-shop-exists",
+              {
+                params: {
+                  token: token,
+                },
+              }
+            ).then((response) => {
+              if (response.data === "Not Found") {
+                navigate("/name-your-shop");
+              } else {
+                navigate("/your-shop", {
+                  state: response.data,
+                });
+              }
+            })
+            // console.log(response.data === "Not Found");
+          }
+          else{
+            alert("You don't have any delivery address... Edit in your profile");
+          }
+        })
   };
   const imageClickHandler = (event) => {
     navigate("/item", {

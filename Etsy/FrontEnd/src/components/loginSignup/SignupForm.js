@@ -8,8 +8,11 @@ import {
   Button,
 } from "reactstrap";
 import axios from "axios";
+import { Modal } from "reactstrap";
+import {API} from '../../Backend';
 
 const SignupForm = () => {
+  // console.log("sdfsdf   " + props);
   const [formValue, setformValue] = useState({
     email: "",
     name: "",
@@ -52,7 +55,7 @@ const SignupForm = () => {
       Name: formValue.name,
     };
     console.log(data);
-    axios.post("http://localhost:8080/signup", data).then((response) => {
+    axios.post(API+"/signup", data).then((response) => {
       if (response.status === 200) {
         alert("You are signed up. Proceed To login");
         window.location.reload(false);
@@ -64,9 +67,9 @@ const SignupForm = () => {
     if (event.target.name === "email") {
       validateEmail(event);
     }
-    if (event.target.name === "name") {
-      validateName(event);
-    }
+    // if (event.target.name === "name") {
+    //   validateName(event);
+    // }
     if (event.target.name === "password") {
       validatePassword(event);
     }
@@ -75,62 +78,64 @@ const SignupForm = () => {
       [event.target.name]: event.target.value,
     });
   };
-  return (
-    <Form onSubmit={handleSubmit}>
-      <FormGroup className="mb-3" >
-        <Label>Email address</Label>
-        <Input
-          type="email"
-          name="email"
-          placeholder="Enter email"
-          invalid={validEmailStatus === "has-danger"}
-          valid={validEmailStatus === "has-success"}
-          value={formValue.email}
-          onChange={handleChange}
-          required
-        />
-        <FormFeedback>
-          Uh oh! Looks like there is an issue with your email. Please input a
-          correct email.
-        </FormFeedback>
-        <FormFeedback valid>
-          That's a tasty looking email you've got there.
-        </FormFeedback>
-      </FormGroup>
+    return (
+ 
+       <Form >
+        <FormGroup className="mb-3" >
+          <Label>Email address</Label>
+          <Input
+            type="email"
+            name="email"
+            placeholder="Enter email"
+            invalid={validEmailStatus === "has-danger"}
+            valid={validEmailStatus === "has-success"}
+            value={formValue.email}
+            onChange={handleChange}
 
-      <FormGroup className="mb-3" >
-        <Label>First Name</Label>
-        <Input
-          type="text"
-          name="name"
-          placeholder="Name"
-          
-          value={formValue.name}
-          onChange={handleChange}
-          required
-        />
-        
-      </FormGroup>
-      
-      <FormGroup className="mb-3" >
-        <Label>Password</Label>
-        <Input
-          type="password"
-          name="password"
-          placeholder="Password"
-          
-          value={formValue.password}
-          onChange={handleChange}
-          required
-        />
-        
-      </FormGroup>
-      <div className="d-grid gap-2 rounded-circle">
-        <Button variant="dark" type="submit" onClick={handleSubmit}>
-          Signup
-        </Button>
-      </div>
-    </Form>
-  );
+          />
+          <FormFeedback>
+            Uh oh! Looks like there is an issue with your email. Please input a
+            correct email.
+          </FormFeedback>
+          <FormFeedback valid>
+            That's a tasty looking email you've got there.
+          </FormFeedback>
+        </FormGroup>
+
+        <FormGroup className="mb-3" >
+          <Label>Name</Label>
+          <Input
+            type="text"
+            name="name"
+            placeholder="Name"
+
+            value={formValue.name}
+            onChange={handleChange}
+            required
+          />
+
+        </FormGroup>
+
+        <FormGroup className="mb-3" >
+          <Label>Password</Label>
+          <Input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formValue.password}
+            onChange={handleChange}
+            required
+          />
+
+        </FormGroup>
+        <div className="d-grid gap-2 rounded-circle">
+          <Button variant="dark" type="submit" onClick={handleSubmit}>
+            Signup
+          </Button>
+        </div>
+      </Form> 
+    );
+
+
 };
 export default SignupForm;
