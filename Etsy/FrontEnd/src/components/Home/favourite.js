@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import Heart from "react-animated-heart";
 
 function Favourite(props) {
-  console.log(props);
   const [isFavourite, setFavourite] = useState(false);
 
   useEffect(() => {

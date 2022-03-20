@@ -14,6 +14,7 @@ import PurchaseDetailsPage from './components/Purchases/purchaseDetailsPage';
 import ProfilePage from './components/Profile/profilePage';
 import ShopPage from './components/Shop/ShopPage';
 import ShopName from './components/Shop/ShopName';
+import SearchPage from './components/SearchPage/SearchPage';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
           <Route path="/purchase-details" element={<PurchaseDetailsPage />} />
           <Route path="/your-shop" element={<ShopPage />} />
           <Route path="/name-your-shop" element={<ShopName />} />
+          <Route path="/search-page" element={<SearchPage />} />
         </Routes>
 
         

@@ -431,4 +431,53 @@ app.post("/edit", function (req, res) {
   });
 });
 
+app.get("/search", function (req, res) {
+  console.log("Inside download search item GET");
+  let { searchWord } = req.query;
+ 
+  connection.getConnection(function (err, conn) {
+    if (err) {
+      console.log("Error in creating connection!");
+      res.writeHead(400, {
+        "Content-type": "text/plain",
+      });
+      res.end("Error in creating connection!");
+    } else {
+      //Login validation query
+
+      var sql = "SELECT * FROM itemdetails WHERE ItemName LIKE '%"+ (searchWord)+"%';";
+      console.log(sql);
+      conn.query(sql, function (err, result) {
+        if (err) {
+          console.log("Error in retrieving items search data");
+          res.writeHead(400, {
+            "Content-type": "text/plain",
+          });
+          res.end("Error in retrieving items search data");
+        } else {
+          // console.log(result[0].password);
+          //   console.log("Items Data: ", result);
+          res.writeHead(200, {
+            "Content-type": "application/json",
+          });
+          for (const [key, item] of Object.entries(result)) {
+            var file = item.ItemImage;
+            var filetype = file.split(".").pop();
+            console.log(file);
+            var filelocation = path.join(
+              __dirname + "/../public/uploads",
+              file
+            );
+            var img = fs.readFileSync(filelocation);
+            var base64img = new Buffer(img).toString("base64");
+            item.ItemImage = "data:image/" + filetype + ";base64," + base64img;
+          }
+            // console.log(result.length);
+          res.end(JSON.stringify(result));
+        }
+      });
+    }
+  });
+});
+
 module.exports = app;
