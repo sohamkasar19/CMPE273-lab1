@@ -105,6 +105,7 @@ app.get("/all-images", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -114,7 +115,7 @@ app.get("/details", function (req, res) {
   const ItemId = req.query.ItemId;
   connection.getConnection(function (err, conn) {
     if (err) {
-      console.log("Error in creating connection!");
+      console.log("Error in creating connection!"+ err);
       res.writeHead(400, {
         "Content-type": "text/plain",
       });
@@ -153,8 +154,11 @@ app.get("/details", function (req, res) {
           res.end(JSON.stringify(result));
         }
       });
+
     }
+    conn.release();
   });
+  
 });
 
 app.get("/favouritesImages", function (req, res) {
@@ -210,6 +214,7 @@ app.get("/favouritesImages", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -256,6 +261,7 @@ app.get("/favourites", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -312,6 +318,7 @@ app.post("/set-remove-favourite", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -360,6 +367,7 @@ app.post("/add", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -428,6 +436,7 @@ app.post("/edit", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -477,6 +486,7 @@ app.get("/search", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 

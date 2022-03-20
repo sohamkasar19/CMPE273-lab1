@@ -102,6 +102,7 @@ app.post("/add", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -151,6 +152,7 @@ app.get("/all-orders", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -201,6 +203,7 @@ app.get("/details", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 

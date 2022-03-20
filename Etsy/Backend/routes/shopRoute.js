@@ -118,6 +118,7 @@ app.get("/check-shop-name", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -170,6 +171,7 @@ app.get("/check-shop-exists", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -219,6 +221,7 @@ app.post("/add-shop-name", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -272,6 +275,7 @@ app.get("/details", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -310,6 +314,7 @@ app.get("/details-by-id", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -366,6 +371,7 @@ app.get("/items", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -420,6 +426,7 @@ app.get("/check-owner", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -469,6 +476,7 @@ app.post("/add-photo", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
 

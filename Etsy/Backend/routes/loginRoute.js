@@ -13,39 +13,7 @@ var connection = require('./../dbConnection.js');
 app.use(cookieParser());
 
 
-// import express from 'express';
-// import session from 'express-session';
-// import cookieParser from 'cookie-parser';
-// import mysql from 'mysql' ;
-// import * as fs from 'fs';
 
-// var app = express();
-
-//setting up session
-// app.set("trust proxy", 1);
-// app.use(session({
-//     secret: 'cmpe273-etsy-app',
-//     resave: false,
-//     saveUninitialized: false,
-//     duration: 60 * 60 * 100,
-//     activeDuration: 5 * 60 * 100
-// }));
-
-
-
-// DB connection
-// const bufferData = fs.readFileSync('config.json');
-// const JSONData = bufferData.toString();
-// let constants = JSON.parse(JSONData);
-
-// var connection = mysql.createPool({
-//     // connectionLimit: 100,
-//     host: constants.DB.host,
-//     user: constants.DB.username,
-//     password: constants.DB.password,
-//     port: constants.DB.port,
-//     database: constants.DB.database
-// });
 app.get('/', function(req, res) {
     console.log(req.session.user);
     res.end(req.session.user);
@@ -55,10 +23,6 @@ app.post('/', function (req, res) {
 
     console.log('Inside login POST');
     console.log('Request Body: ' + req.body.Email);
-    // if(req.session.user != null) {
-    //     console.log("inside session");
-    // }
-    //Query
 
     connection.getConnection(function (err, conn) {
         if (err) {
@@ -104,6 +68,7 @@ app.post('/', function (req, res) {
                 }
             });
         }
+        conn.release();
     });
 });
 

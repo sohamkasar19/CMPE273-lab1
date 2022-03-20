@@ -12,24 +12,6 @@ var connection = require("./../dbConnection.js");
 // const { log } = require("console");
 const jwt = require("jsonwebtoken");
 
-// import  express  from 'express';
-// var app = express();
-
-// import mysql from 'mysql' ;
-// import * as fs from 'fs';
-
-// const bufferData = fs.readFileSync('config.json');
-// const JSONData = bufferData.toString();
-// let constants = JSON.parse(JSONData);
-
-// var connection = mysql.createPool({
-//     // connectionLimit: 100,
-//     host: constants.DB.host,
-//     user: constants.DB.username,
-//     password: constants.DB.password,
-//     port: constants.DB.port,
-//     database: constants.DB.database
-// });
 
 // Set The Storage Engine
 const storage = multer.diskStorage({
@@ -83,18 +65,7 @@ app.post("/upload-photo", upload.single("photos"), (req, res) => {
   console.log("req.body", req.body);
   res.end(res.req.file.filename);
 });
-// app.post("/upload-photo", (req, res) => {
-// //   console.log("req.body", req.file);
-// //   res.end();
-//     upload(req, res, (err) => {
-//         if(err) {
-//             console.log("Error in upload photo");
-//         }
-//         else {
-//             console.log(req.file);
-//         }
-//     })
-// });
+
 
 //download photo
 app.get("/download-photo/", (req, res) => {
@@ -166,6 +137,7 @@ app.get("/", function (req, res) {
           }
         });
       }
+      conn.release();
     });
   }
 });
@@ -243,6 +215,7 @@ app.post("/", (req, res) => {
         }
       });
     }
+    conn.release();
   });
 });
 
@@ -315,6 +288,7 @@ app.get("/new", function (req, res) {
         });
       }
     });
+    conn.release();
   }
 });
 
@@ -371,11 +345,9 @@ app.get("/new/id", function (req, res) {
         }
       });
     }
+    conn.release();
   });
 });
-// app.post("/upload-file", upload.array("photos", 5), (req, res) => {
-//   console.log("req.body", req.body);
-//   res.end();
-// });
+
 
 module.exports = app;

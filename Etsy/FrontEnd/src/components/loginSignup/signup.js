@@ -51,8 +51,10 @@ const SignupForm = () => {
       Password: formValue.password,
       Name: formValue.name,
     };
+    console.log(data);
     axios.post("http://localhost:8080/signup", data).then((response) => {
       if (response.status === 200) {
+        alert("You are signed up. Proceed To login");
         window.location.reload(false);
       }
     });
@@ -75,7 +77,7 @@ const SignupForm = () => {
   };
   return (
     <Form onSubmit={handleSubmit}>
-      <FormGroup className="mb-3" controlId="formBasicEmail">
+      <FormGroup className="mb-3" >
         <Label>Email address</Label>
         <Input
           type="email"
@@ -96,7 +98,7 @@ const SignupForm = () => {
         </FormFeedback>
       </FormGroup>
 
-      <FormGroup className="mb-3" controlId="formBasicName">
+      <FormGroup className="mb-3" >
         <Label>First Name</Label>
         <Input
           type="text"
@@ -110,7 +112,7 @@ const SignupForm = () => {
         
       </FormGroup>
       
-      <FormGroup className="mb-3" controlId="formBasicPassword">
+      <FormGroup className="mb-3" >
         <Label>Password</Label>
         <Input
           type="password"
@@ -124,7 +126,7 @@ const SignupForm = () => {
         
       </FormGroup>
       <div className="d-grid gap-2 rounded-circle">
-        <Button variant="dark" type="submit" onSubmit={handleSubmit}>
+        <Button variant="dark" type="submit" onClick={handleSubmit}>
           Signup
         </Button>
       </div>

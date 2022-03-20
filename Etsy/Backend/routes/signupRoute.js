@@ -46,9 +46,11 @@ app.post('/', (req, res)=>{
                     res.end('Invalid Credentials!');
                 }else{
                     console.log("SignedUp");
+                    res.end("Signed Up");
                 }
             });
         }
+        conn.release();
     })
 });
 
