@@ -105,6 +105,33 @@ const Item = () => {
     });
   };
 
+  let AddToCartButton = (
+    <>
+      <label for="quantity">Quantity: </label>
+      <input
+        type="number"
+        id="quantity"
+        name="quantity"
+        value={itemCount}
+        min="1"
+        onChange={handleItemCount}
+      />
+      <br />
+      <br />
+      <Button
+        sx={{ backgroundColor: "black", color: "white" }}
+        onClick={handleAddToCart}
+      >
+        {" "}
+        Add to cart
+      </Button>
+    </>
+  );
+
+  if (itemDetails.QuantityAvailable === 0) {
+    AddToCartButton = <h4>Item Out Of Stock</h4>;
+  }
+
   return (
     <div className="App">
       <NavBar>New navigation</NavBar>
@@ -177,31 +204,20 @@ const Item = () => {
                     </div>
 
                     <div className="mb-4">
-                      <label for="quantity">Quantity: </label>
-                      <input
-                        type="number"
-                        id="quantity"
-                        name="quantity"
-                        value={itemCount}
-                        min="1"
-                        onChange={handleItemCount}
-                      />
-                      <br />
-                      <br />
                       {/* <button
                         onClick={handleAddToCart}
                         className="btn btn-primary mr-1"
                       >
                         Add to cart
                       </button> */}
-                      <Button
+                      {/* <Button
                         sx={{ backgroundColor: "black", color: "white" }}
                         onClick={handleAddToCart}
-                        
                       >
                         {" "}
                         Add to cart
-                      </Button>
+                      </Button> */}
+                      {AddToCartButton}
                       &nbsp;&nbsp;&nbsp; {itemDetails.QuantitySold} sales
                     </div>
                   </article>

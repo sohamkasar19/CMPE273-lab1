@@ -176,7 +176,7 @@ app.get("/check-shop-exists", function (req, res) {
 app.post("/add-shop-name", function (req, res) {
   console.log("Inside add shop name  post");
   //   console.log("Request Body ItemId: " + req.query.ItemId);
-  const { token, nameToAdd } = req.query;
+  const { token, nameToAdd } = req.body;
   console.log(token);
   let decode = null;
   try {
