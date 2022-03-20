@@ -216,7 +216,7 @@ app.get("/favouritesImages", function (req, res) {
 app.get("/favourites", function (req, res) {
   console.log("Inside favourites  GET");
   const token = req.query.token;
-  console.log(token);
+  // console.log(token);
   let decode = null;
   try {
     decode = jwt.verify(token, process.env.SECRET);

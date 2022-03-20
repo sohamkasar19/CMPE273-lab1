@@ -5,7 +5,8 @@ var session = require('express-session');
 var cookieParser = require("cookie-parser");
 var jwt = require('jsonwebtoken');
 require("dotenv").config();
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 var app = express();
 
 var connection = require('./../dbConnection.js');
@@ -82,7 +83,7 @@ app.post('/', function (req, res) {
                 }
                 else {
                     // console.log(result[0].password);
-                    if (result.length == 0 || req.body.Password != result[0].Password) {
+                    if (result.length == 0 || bcrypt.compareSync(req.body.Password, result[0].Password)) {
                         res.writeHead(401, {
                             'Content-type': 'text/plain'
                         })
@@ -90,29 +91,12 @@ app.post('/', function (req, res) {
                         res.end('Invalid Credentials!');
                     }
                     else {
-                        console.log(result);
-                        // res.cookie('cookie', result[0].Firstname, {
-                        //     maxAge: 360000,
-                        //     httpOnly: false,
-                        //     path: '/'
-                        // });
-                        // res.cookie('Accounttype', result[0].Accounttype, {
-                        //     maxAge: 360000,
-                        //     httpOnly: false,
-                        //     path: '/'
-                        // });
-                        // req.session.user = result[0];
-                        // res.writeHead(200, {
-                        //     'Content-type': 'text/plain'
-                        // })
+                        
                         console.log(process.env.SECRET);
                         const token = jwt.sign({"id":result[0].ProfileId},process.env.SECRET);
-                        // res.cookie("access_token",token,{expire: new Date()+9999});
-
-                        // console.log("From session  " +  req.cookie.access_token);
                         
                         console.log('Login successful!');
-                        // res.end('Login successful!');
+
                         let userdetails = result[0]
                         return res.json({token});
                     }

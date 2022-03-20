@@ -4,6 +4,8 @@ var mysql = require('mysql');
 // var session = require('cookie-session');
 var cookieParser = require('cookie-parser');
 var app = express();
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 var connection = require('./../dbConnection.js');
 
@@ -33,8 +35,8 @@ app.post('/', (req, res)=>{
         }else{
             console.log("connection done");
             console.log(req.body);
-
-            var sql = 'INSERT INTO userdetails (Email,Password,Name)  VALUES('+ mysql.escape(req.body.Email)+','+ mysql.escape(req.body.Password)+','+ mysql.escape(req.body.Name)+');';
+            const hashed_password = bcrypt.hashSync(req.body.Password, saltRounds)   ;
+            var sql = 'INSERT INTO userdetails (Email,Password,Name)  VALUES('+ mysql.escape(req.body.Email)+','+ mysql.escape(hashed_password)+','+ mysql.escape(req.body.Name)+');';
             conn.query(sql,  (err, result)=> {
                 if (err) {
                     console.log('Invalid Credentials! 1111');
