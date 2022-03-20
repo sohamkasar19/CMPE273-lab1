@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 // import { useNavigate } from "react-router";
 import NavBar from "../NavBar/NavBar";
 import "./profile.css";
+import { CountriesData } from './Countries'
 
 export const Profile = () => {
-
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
@@ -14,15 +14,14 @@ export const Profile = () => {
     let isSubscribed = true;
 
     const getUserDetails = async () => {
-      let response = await axios
-        .get("http://localhost:8080/profile/new", {
-          params: {
-            token: token,
-          },
-        });
-        setUserData(response.data);
+      let response = await axios.get("http://localhost:8080/profile/new", {
+        params: {
+          token: token,
+        },
+      });
+      setUserData(response.data);
     };
-    if(isSubscribed) {
+    if (isSubscribed) {
       getUserDetails().catch(console.error);
     }
     return () => {
@@ -30,14 +29,15 @@ export const Profile = () => {
     };
   }, []);
 
- 
-
   const handleChange = async (event) => {
     if (event.target.name === "ProfileImage") {
       var profilePhoto = event.target.files[0];
       var data = new FormData();
       data.append("photos", profilePhoto);
-      let response = await axios.post("http://localhost:8080/profile/upload-photo", data);
+      let response = await axios.post(
+        "http://localhost:8080/profile/upload-photo",
+        data
+      );
       setUserData({
         ...userData,
         ProfileImageName: response.data,
@@ -51,7 +51,7 @@ export const Profile = () => {
   };
 
   const handleSubmit = (event) => {
-    
+    console.log(event);
     var data = {
       ProfileId: userData.ProfileId,
       Email: userData.Email,
@@ -63,13 +63,14 @@ export const Profile = () => {
       Address: userData.Address,
       Gender: userData.Gender,
       ProfileImage: userData.ProfileImageName,
-      Phonenumber: userData.Phonenumber
+      Phonenumber: userData.Phonenumber,
     };
     axios.post("http://localhost:8080/profile", data).then((response) => {
       if (response.status === 200) {
         console.log("Axios post from profile submit");
       }
     });
+    event.preventDefault();
   };
 
   let profileImageData = (
@@ -137,7 +138,7 @@ export const Profile = () => {
                 View Profile
               </a>
             </div>
-            <form className="section-inner" encType="multipart/form-data">
+            <form className="section-inner" encType="multipart/form-data" onSubmit={handleSubmit}>
               <div className="input-group">
                 <label className="label" htmlFor="avatar">
                   Profile Picture
@@ -211,6 +212,7 @@ export const Profile = () => {
                     id="Email"
                     value={userData.Email ?? ""}
                     onChange={handleChange}
+                    required
                   />
                 </div>
               </div>
@@ -222,7 +224,9 @@ export const Profile = () => {
                 <div className="autosuggest-wrapper">
                   <input
                     aria-describedby="the_reason"
-                    type="number"
+                    type="tel"
+                    pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                    placeholder="123-456-6789"
                     autoComplete="off"
                     name="Phonenumber"
                     id="Phonenumber"
@@ -274,7 +278,7 @@ export const Profile = () => {
                       value="private"
                       name="Gender"
                       id="private"
-                      checked={userData.Gender === "Rather not say"}
+                      checked={userData.Gender === "private"}
                       onChange={handleChange}
                     />
                   </label>
@@ -294,7 +298,7 @@ export const Profile = () => {
                     autoComplete="off"
                     name="DOB"
                     id="DOB"
-                    value={userData.DOB ?? ""}
+                    value={userData.DOB ? userData.DOB.substring(0, 10) : ""}
                     onChange={handleChange}
                   />
                 </div>
@@ -341,7 +345,7 @@ export const Profile = () => {
                   Country
                 </label>
                 <div className="autosuggest-wrapper">
-                  <input
+                  {/* <input
                     aria-describedby="the_reason"
                     type="text"
                     autoComplete="off"
@@ -350,7 +354,16 @@ export const Profile = () => {
                     value={userData.Country ?? ""}
                     onChange={handleChange}
                     className="text"
-                  />
+                  /> */}
+                  <select name="Country"  id="Country" value={userData.Country} onChange={handleChange}>
+                    {CountriesData.data.map((item) => (
+                        <option value={item.country}>{item.country}</option>
+                    ))}
+                    <option value="volvo">Volvo</option>
+                    <option value="saab">Saab</option>
+                    <option value="mercedes">Mercedes</option>
+                    <option value="audi">Audi</option>
+                  </select>
                 </div>
               </div>
               <div className="submit">
@@ -358,7 +371,6 @@ export const Profile = () => {
                   className="btn-primary"
                   type="submit"
                   value="Save Changes"
-                  onClick={handleSubmit}
                 />
               </div>
             </form>

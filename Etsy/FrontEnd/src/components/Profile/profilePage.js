@@ -18,13 +18,11 @@ import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  
 
   const [userData, setUserData] = useState({});
- 
+
   const [favouritesList, setFavouritesList] = useState([]);
   const [shopData, setShopData] = useState({});
-  
 
   useEffect(() => {
     let isSubscribed = true;
@@ -67,16 +65,12 @@ const ProfilePage = () => {
     if (isSubscribed) {
       fetchUserData().catch(console.error);
       fetchFavourites().catch(console.error);
-      
     }
 
     return () => {
       isSubscribed = false;
     };
   }, []);
-
-
-  
 
   const handleEditIcon = () => {
     navigate("/profile");
@@ -147,6 +141,26 @@ const ProfilePage = () => {
     );
   }
 
+  let profileImageData = (
+    <img
+      id="avatar_img"
+      src="https://www.etsy.com/images/avatars/default_avatar_400x400.png"
+      // src={formValue.ProfileImagePreview}
+      alt=""
+      className="img-fluid rounded-circle"
+    />
+  );
+  if (userData.ProfileImage) {
+    profileImageData = (
+      <img
+        id="profile-image"
+        src={userData.ProfileImage}
+        alt="Avatar"
+        style={{ width: "200px" }}
+      />
+    );
+  }
+
   return (
     <>
       <NavBar>New navigation</NavBar>
@@ -158,12 +172,13 @@ const ProfilePage = () => {
             <div class="d-flex justify-content-between">
               <div class="d-flex justify-content-start">
                 <div className="image-cropper">
-                  <img
+                  {/* <img
                     id="profile-image"
                     src={userData.ProfileImage}
                     alt="Avatar"
                     style={{ width: "200px" }}
-                  />
+                  /> */}
+                  {profileImageData}
                 </div>
                 <h4 class="display-6">&nbsp;&nbsp;{userData.Name}</h4>
                 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -191,7 +206,6 @@ const ProfilePage = () => {
       <div className="footer--pin">
         <Footer />
       </div>
-
     </>
   );
 };

@@ -115,7 +115,7 @@ app.get("/download-photo/", (req, res) => {
 
 app.get("/", function (req, res) {
   console.log("Inside profile GET");
-  console.log("Request Body JWT TOKEN: " + req.query.token);
+  // console.log("Request Body JWT TOKEN: " + req.query.token);
 
   if (!req.query.token) {
     console.log("No token");
@@ -145,7 +145,7 @@ app.get("/", function (req, res) {
         res.end("Error in creating connection!");
       } else {
         //Login validation query
-        console.log("No error");
+        // console.log("No error");
         var sql =
           "SELECT * from userdetails WHERE ProfileId = " +
           mysql.escape(ProfileId);
@@ -158,7 +158,7 @@ app.get("/", function (req, res) {
             res.end("Error in retrieving profile data");
           } else {
             // console.log(result[0].password);
-            console.log("Profile Data: ", result);
+            // console.log("Profile Data: ", result);
             res.writeHead(200, {
               "Content-type": "application/json",
             });
@@ -183,30 +183,53 @@ app.post("/", (req, res) => {
     } else {
       console.log("connection done");
       console.log(req.body);
-
-      var sql =
-        "UPDATE userdetails SET Email = " +
-        mysql.escape(req.body.Email) +
-        ", Name = " +
-        mysql.escape(req.body.Name) +
-        ", DOB = " +
-        mysql.escape(req.body.DOB) +
-        ", About = " +
-        mysql.escape(req.body.About) +
-        ", City = " +
-        mysql.escape(req.body.City) +
-        ", Country = " +
-        mysql.escape(req.body.Country) +
-        ", Address = " +
-        mysql.escape(req.body.Address) +
-        ", Gender = " +
-        mysql.escape(req.body.Gender) +
-        ", ProfileImage = " +
-        mysql.escape(req.body.ProfileImage) +
-        ", Phonenumber = " +
-        mysql.escape(req.body.Phonenumber) +
-        "WHERE ProfileId = " +
-        mysql.escape(req.body.ProfileId);
+      if (req.body.ProfileImage) {
+        var sql =
+          "UPDATE userdetails SET Email = " +
+          mysql.escape(req.body.Email) +
+          ", Name = " +
+          mysql.escape(req.body.Name) +
+          ", DOB = " +
+          mysql.escape(req.body.DOB) +
+          ", About = " +
+          mysql.escape(req.body.About) +
+          ", City = " +
+          mysql.escape(req.body.City) +
+          ", Country = " +
+          mysql.escape(req.body.Country) +
+          ", Address = " +
+          mysql.escape(req.body.Address) +
+          ", Gender = " +
+          mysql.escape(req.body.Gender) +
+          ", ProfileImage = " +
+          mysql.escape(req.body.ProfileImage) +
+          ", Phonenumber = " +
+          mysql.escape(req.body.Phonenumber) +
+          "WHERE ProfileId = " +
+          mysql.escape(req.body.ProfileId);
+      } else {
+        var sql =
+          "UPDATE userdetails SET Email = " +
+          mysql.escape(req.body.Email) +
+          ", Name = " +
+          mysql.escape(req.body.Name) +
+          ", DOB = " +
+          mysql.escape(req.body.DOB) +
+          ", About = " +
+          mysql.escape(req.body.About) +
+          ", City = " +
+          mysql.escape(req.body.City) +
+          ", Country = " +
+          mysql.escape(req.body.Country) +
+          ", Address = " +
+          mysql.escape(req.body.Address) +
+          ", Gender = " +
+          mysql.escape(req.body.Gender) +
+          ", Phonenumber = " +
+          mysql.escape(req.body.Phonenumber) +
+          "WHERE ProfileId = " +
+          mysql.escape(req.body.ProfileId);
+      }
 
       conn.query(sql, (err, result) => {
         if (err) {
@@ -225,7 +248,7 @@ app.post("/", (req, res) => {
 
 app.get("/new", function (req, res) {
   console.log("Inside profile GET");
-  console.log("Request Body JWT TOKEN: " + req.query.token);
+  // console.log("Request Body JWT TOKEN: " + req.query.token);
 
   if (!req.query.token) {
     console.log("No token");
@@ -255,7 +278,7 @@ app.get("/new", function (req, res) {
         res.end("Error in creating connection!");
       } else {
         //Login validation query
-        console.log("No error");
+        // console.log("No error");
         var sql =
           "SELECT * from userdetails WHERE ProfileId = " +
           mysql.escape(ProfileId);
@@ -299,7 +322,6 @@ app.get("/new/id", function (req, res) {
   console.log("Inside profile id GET");
 
   const { ProfileId } = req.query;
-
 
   // console.log("From Session: "+ res.cookie.access_token)
   //Query
