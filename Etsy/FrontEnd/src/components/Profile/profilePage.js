@@ -8,13 +8,12 @@ import Footer from "../Footer/footer";
 import { useNavigate } from "react-router";
 import {
   Box,
-  Grid,
   ImageList,
   ImageListItem,
   ImageListItemBar,
 } from "@mui/material";
 import { Button } from "react-bootstrap";
-import { useSelector } from "react-redux";
+
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -22,9 +21,15 @@ const ProfilePage = () => {
   const [userData, setUserData] = useState({});
 
   const [favouritesList, setFavouritesList] = useState([]);
-  const [shopData, setShopData] = useState({});
+  // const [shopData, setShopData] = useState({});
+
+  
 
   useEffect(() => {
+    if(!localStorage.getItem("user")) {
+      navigate('/home');
+      window.location.reload(false);
+    }
     let isSubscribed = true;
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
@@ -49,19 +54,19 @@ const ProfilePage = () => {
       );
       setFavouritesList(responseData.data);
     };
-    const fetchShopData = async () => {
-      const local = JSON.parse(localStorage.getItem("user"));
-      const token = local.token;
-      let responseData = await axios.get(
-        "http://localhost:8080/shop/details-by-id",
-        {
-          params: {
-            token: token,
-          },
-        }
-      );
-      setFavouritesList(responseData.data);
-    };
+    // const fetchShopData = async () => {
+    //   const local = JSON.parse(localStorage.getItem("user"));
+    //   const token = local.token;
+    //   let responseData = await axios.get(
+    //     "http://localhost:8080/shop/details-by-id",
+    //     {
+    //       params: {
+    //         token: token,
+    //       },
+    //     }
+    //   );
+    //   setFavouritesList(responseData.data);
+    // };
     if (isSubscribed) {
       fetchUserData().catch(console.error);
       fetchFavourites().catch(console.error);
@@ -70,7 +75,7 @@ const ProfilePage = () => {
     return () => {
       isSubscribed = false;
     };
-  }, []);
+  }, [navigate]);
 
   const handleEditIcon = () => {
     navigate("/profile");

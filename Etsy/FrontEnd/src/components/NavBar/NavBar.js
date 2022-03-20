@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import LoginSignupButton from "../loginSignup/loginSignupButton";
 import LogoutButton from "../loginSignup/logoutButton";
 import StoreIcon from "@mui/icons-material/Store";
+import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import axios from "axios";
 
 function NavBar() {
@@ -19,6 +20,7 @@ function NavBar() {
   let LoginLogOutButton = null;
   let Favourite = null;
   let ShopButton = null;
+  let CartButton = null;
 
   const [searchEntry, setSearchEntry] = useState("");
 
@@ -90,7 +92,11 @@ function NavBar() {
         </Dropdown.Toggle>
 
         <Dropdown.Menu>
-          <Dropdown.Item>
+          <Dropdown.Item
+            onClick={(e) => {
+              navigate("/profile-page");
+            }}
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -98,9 +104,6 @@ function NavBar() {
               fill="currentColor"
               className="bi bi-person-fill"
               viewBox="0 0 16 16"
-              onClick={(e) => {
-                navigate("/profile-page");
-              }}
             >
               <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
             </svg>
@@ -109,9 +112,27 @@ function NavBar() {
           <Dropdown.Item href="/home">
             <LogoutButton />
           </Dropdown.Item>
+          <Dropdown.Item onClick={(e) => navigate('/purchase')}>
+          <ShoppingBagIcon/> &nbsp;Purchases
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     );
+    CartButton = (
+      <Nav.Link>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="26"
+                  height="26"
+                  fill="currentColor"
+                  className="bi bi-cart4"
+                  viewBox="0 0 16 16"
+                  onClick={(e) => navigate("/cart")}
+                >
+                  <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
+                </svg>
+              </Nav.Link>
+    )
   } else {
     // navigate("/home")
     LoginLogOutButton = (
@@ -122,16 +143,15 @@ function NavBar() {
   }
 
   const handleSearchClick = () => {
-    if(searchEntry.length > 0) {
-      navigate("/search-page",  {
-        state: searchEntry
+    if (searchEntry.length > 0) {
+      navigate("/search-page", {
+        state: searchEntry,
       });
-     
     }
-  }
+  };
   const handleSearchChange = (event) => {
     setSearchEntry(event.target.value);
-  }
+  };
   return (
     <>
       <div></div>
@@ -181,19 +201,9 @@ function NavBar() {
               {ShopButton}
               {Favourite}
               &nbsp;&nbsp;&nbsp;
-              <Nav.Link>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="26"
-                  height="26"
-                  fill="currentColor"
-                  className="bi bi-cart4"
-                  viewBox="0 0 16 16"
-                  onClick={(e) => navigate("/cart")}
-                >
-                  <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z" />
-                </svg>
-              </Nav.Link>
+              {CartButton}
+              
+              
             </Nav>
           </Navbar.Collapse>
         </Container>

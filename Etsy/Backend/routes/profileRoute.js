@@ -205,8 +205,8 @@ app.post("/", (req, res) => {
           mysql.escape(req.body.ProfileImage) +
           ", Phonenumber = " +
           mysql.escape(req.body.Phonenumber) +
-          "WHERE ProfileId = " +
-          mysql.escape(req.body.ProfileId);
+          " WHERE ProfileId = " +
+          mysql.escape(req.body.ProfileId) +";";
       } else {
         var sql =
           "UPDATE userdetails SET Email = " +
@@ -227,13 +227,13 @@ app.post("/", (req, res) => {
           mysql.escape(req.body.Gender) +
           ", Phonenumber = " +
           mysql.escape(req.body.Phonenumber) +
-          "WHERE ProfileId = " +
-          mysql.escape(req.body.ProfileId);
+          " WHERE ProfileId = " +
+          mysql.escape(req.body.ProfileId)+";";
       }
-
+     console.log(sql);
       conn.query(sql, (err, result) => {
         if (err) {
-          console.log("Invalid Credentials! 1111" + err);
+          console.log("User details add" + err);
           res.writeHead(400, {
             "Content-Type": "text/plain",
           });

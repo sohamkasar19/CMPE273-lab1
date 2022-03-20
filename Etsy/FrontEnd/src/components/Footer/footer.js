@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React from "react";
 import {
   Navbar,
   Container,
@@ -8,7 +8,7 @@ import {
 import CurrencyModal from "./currencyModal";
 import CopyrightIcon from "@mui/icons-material/Copyright";
 function Footer() {
-  const [currencyvalue, setCurrencyValue] = useState("USD");
+ 
   
   return (
     <>
@@ -27,7 +27,7 @@ function Footer() {
               //className="ml-auto"
             >
               <Nav.Link >
-                <CurrencyModal setCurrencyValue={setCurrencyValue} />
+                <CurrencyModal  />
               </Nav.Link>
               <Navbar.Text className="border-left pl-2 ms-auto">
                 <CopyrightIcon />{' '}2022 Etsy, inc.

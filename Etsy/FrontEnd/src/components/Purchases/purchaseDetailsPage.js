@@ -3,17 +3,27 @@ import Footer from "../Footer/footer";
 import NavBar from "../NavBar/NavBar";
 // import "./cartPage.css";
 import "../Home/home.css";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import axios from "axios";
+import EuroIcon from "@mui/icons-material/Euro";
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
+import { useSelector } from "react-redux";
+
 
 const PurchaseDetailsPage = () => {
   const { state } = useLocation();
-
+  const navigate = useNavigate();
   const [itemList, setItemList] = useState([]);
 
-  const [currencyvalue, setcurrencyValue] = useState("USD");
+  const reduxState = useSelector((state) => state);
+  const [currencyvalue, setcurrencyValue] = useState(reduxState.currency);
 
   useEffect(() => {
+    if(!localStorage.getItem("user")) {
+      navigate('/home');
+      window.location.reload(false);
+    }
     let isSubscribed = true;
     console.log(state);
     const fetchItemList = async () => {
@@ -26,6 +36,7 @@ const PurchaseDetailsPage = () => {
         }
       );
       if (isSubscribed) {
+        setcurrencyValue(reduxState.currency);
         setTimeout(() => {
             setItemList(responseData.data);
             console.log(responseData.data);
@@ -36,7 +47,15 @@ const PurchaseDetailsPage = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [state]);
+  }, [navigate, reduxState.currency, state]);
+  let currencySymbol = null;
+  if (currencyvalue === "USD") {
+    currencySymbol = <MonetizationOnIcon />;
+  } else if (currencyvalue === "Euro") {
+    currencySymbol = <EuroIcon />;
+  } else if (currencyvalue === "INR") {
+    currencySymbol = <CurrencyRupeeIcon />;
+  }
 
   let cartDetails = itemList.map((item) => {
     return (
@@ -54,12 +73,12 @@ const PurchaseDetailsPage = () => {
                 placeholder={item.Quantity}
                 readOnly
               />{" "}
-              x ${item.Price}
+              x {currencySymbol}{item.Price}
             </p>
           </div>
 
           <div className="prodTotal cartSection">
-            <p>$ {item.Quantity * item.Price}</p>
+            <p>{currencySymbol} {item.Quantity * item.Price}</p>
           </div>
         </div>
       </li>
@@ -83,14 +102,14 @@ const PurchaseDetailsPage = () => {
               <ul>
                 <li className="totalRow final">
                   <span className="label">Total</span>
-                  <span className="value">${state.Total}</span>
+                  <span className="value">{currencySymbol}{state.Total}</span>
                 </li>
               </ul>
             </div>
           </div>
         </div>
         <div className="footer--pin">
-          <Footer setcurrencyValue={setcurrencyValue} />
+          <Footer  />
         </div>
       </div>
     </div>

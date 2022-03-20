@@ -9,7 +9,7 @@ function CurrencyModal( ) {
 
   const handleCloseLogin = () => setShowLogin(false);
   const handleShowLogin = () => setShowLogin(true);
-  const [currencyvalue, setcurrencyvalue] = useState("USD");
+  
 
   
   return (

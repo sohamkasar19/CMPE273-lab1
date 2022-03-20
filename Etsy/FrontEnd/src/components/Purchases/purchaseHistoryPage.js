@@ -4,12 +4,19 @@ import Footer from "../Footer/footer";
 import NavBar from "../NavBar/NavBar";
 import "../Home/home.css";
 import { useNavigate } from "react-router";
+import { useSelector } from "react-redux";
+
 
 const PurchasePage = () => {
   const navigate = useNavigate();
   const [purchaseData, setPurchaseData] = useState([]);
-  const [currencyvalue, setcurrencyValue] = useState("USD");
+  const reduxState = useSelector((state) => state);
+  const [currencyvalue, setcurrencyValue] = useState(reduxState.currency);
   useEffect(() => {
+    if(!localStorage.getItem("user")) {
+      navigate('/home');
+      window.location.reload(false);
+    }
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
     let isSubscribed = true;
@@ -29,11 +36,19 @@ const PurchasePage = () => {
         });
       }
     };
-    getPurchaseData().catch(console.error);
+    if(isSubscribed) {
+      getPurchaseData().catch(console.error);
+      setcurrencyValue(reduxState.currency);
+    }
+    
     return () => {
       isSubscribed = false;
     };
-  }, []);
+  }, [navigate, reduxState.currency]);
+
+  
+
+ 
 
   let purchases = purchaseData.map((order) => {
     return (
@@ -76,12 +91,11 @@ const PurchasePage = () => {
     );
   }
 
-  return (
-    <div>
-      <div class="content-container">
-        <NavBar>New navigation</NavBar>
-        <div id="content" className="d-flex justify-content-center">
-          <div className="d-flex flex-column ">
+  let OrderHistory = (<h3>You don't have any previous orders yet..</h3>)
+  if(purchaseData.length > 0) {
+    OrderHistory = (
+      <div className="d-flex flex-column ">
+            <br/>
             <h2 class="title">Order History</h2>
             {/* <p>Click on order id for more details</p>
           <div class="table-responsive">
@@ -98,10 +112,19 @@ const PurchasePage = () => {
           </div> */}
           {purchasesTable}
           </div>
+    )
+  }
+
+  return (
+    <div>
+      <div class="content-container">
+        <NavBar>New navigation</NavBar>
+        <div id="content" className="d-flex justify-content-center">
+          {OrderHistory}
         </div>
       </div>
       <div className="footer--pin">
-        <Footer setcurrencyValue={setcurrencyValue} />
+        <Footer  />
       </div>
     </div>
   );

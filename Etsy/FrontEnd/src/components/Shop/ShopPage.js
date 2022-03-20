@@ -14,6 +14,7 @@ import ShopItemFormEdit from "./ShopItemFormEdit";
 import NavBar from "../NavBar/NavBar";
 import Footer from "../Footer/footer";
 
+
 function ShopPage() {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -28,9 +29,14 @@ function ShopPage() {
   const [showContactDetails, setShowContactDetails] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
 
-  const [currencyvalue, setcurrencyValue] = useState("USD");
+  // const reduxState = useSelector((state) => state);
+  // const [currencyvalue, setcurrencyValue] = useState(reduxState.currency);
 
   useEffect(() => {
+    if(!localStorage.getItem("user")) {
+      navigate('/home');
+      window.location.reload(false);
+    }
     let isSubscribed = true;
     const fetchAllShopData = async () => {
       let responseShop = await axios.get("http://localhost:8080/shop/details", {
@@ -88,7 +94,7 @@ function ShopPage() {
     return () => {
       isSubscribed = false;
     };
-  }, [state]);
+  }, [navigate, state]);
 
   const handleImageChange = async (event) => {
     var profilePhoto = event.target.files[0];
@@ -292,7 +298,7 @@ function ShopPage() {
       </div>
       </div>
       <div className="footer--pin">
-        <Footer setcurrencyValue={setcurrencyValue} />
+        <Footer  />
       </div>
     </>
   );

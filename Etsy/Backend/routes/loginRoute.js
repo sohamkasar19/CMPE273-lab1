@@ -84,7 +84,7 @@ app.post('/', function (req, res) {
                 else {
                     // console.log(result[0].password);
                     if (result.length == 0 || bcrypt.compareSync(req.body.Password, result[0].Password)) {
-                        res.writeHead(401, {
+                        res.writeHead(201, {
                             'Content-type': 'text/plain'
                         })
                         console.log('Invalid Credentials!');
@@ -92,7 +92,8 @@ app.post('/', function (req, res) {
                     }
                     else {
                         
-                        console.log(process.env.SECRET);
+                        
+                        // console.log(process.env.SECRET);
                         const token = jwt.sign({"id":result[0].ProfileId},process.env.SECRET);
                         
                         console.log('Login successful!');

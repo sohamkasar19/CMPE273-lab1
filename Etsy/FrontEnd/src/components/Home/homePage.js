@@ -15,7 +15,6 @@ import {
 } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router";
-import { Navigate } from "react-router-dom";
 import Favourite from "./favourite";
 import Heart from "react-animated-heart";
 import { useSelector } from "react-redux";
@@ -165,8 +164,7 @@ const HomePage = () => {
            
             {itemImageData}
           </ImageList>
-          {currencySymbol}
-          {currencyvalue}
+          
         </div>
         <div className="footer--pin">
           <Footer  />

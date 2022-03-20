@@ -4,11 +4,17 @@ import React, { useEffect, useState } from "react";
 import NavBar from "../NavBar/NavBar";
 import "./profile.css";
 import { CountriesData } from './Countries'
+import { useNavigate } from "react-router";
 
 export const Profile = () => {
+  const navigate = useNavigate();
   const [userData, setUserData] = useState({});
 
   useEffect(() => {
+    if(!localStorage.getItem("user")) {
+      navigate('/home');
+      window.location.reload(false);
+    }
     const local = JSON.parse(localStorage.getItem("user"));
     const token = local.token;
     let isSubscribed = true;
@@ -27,7 +33,7 @@ export const Profile = () => {
     return () => {
       isSubscribed = false;
     };
-  }, []);
+  }, [navigate]);
 
   const handleChange = async (event) => {
     if (event.target.name === "ProfileImage") {
