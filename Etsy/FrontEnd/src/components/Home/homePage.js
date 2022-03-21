@@ -8,15 +8,13 @@ import EuroIcon from "@mui/icons-material/Euro";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import MonetizationOnIcon from "@mui/icons-material/MonetizationOn";
 import {
-  IconButton,
   ImageList,
   ImageListItem,
   ImageListItemBar,
 } from "@mui/material";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { useNavigate } from "react-router";
 import Favourite from "./favourite";
-import Heart from "react-animated-heart";
+// import Heart from "react-animated-heart";
 import { useSelector } from "react-redux";
 import {API} from '../../Backend';
 

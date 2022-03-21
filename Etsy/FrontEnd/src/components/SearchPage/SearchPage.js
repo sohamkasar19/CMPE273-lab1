@@ -42,7 +42,7 @@ function SearchPage() {
         <div className="container">
           <div className="d-flex flex-column">
             <div className="p-2">
-              <h3>Search Results </h3>
+              <h3>Search Results</h3>
             </div>
            {searchList.length > 0 &&  <div className="p-2">
               <SearchListComponent data={searchList}/>

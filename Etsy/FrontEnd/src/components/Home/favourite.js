@@ -62,7 +62,9 @@ function Favourite(props) {
     }
   };
 
-  return <>{<Heart isClick={isFavourite} onClick={handleClick} />}</>;
+  return <>
+  {<Heart isClick={isFavourite} onClick={handleClick} />}
+  </>;
 }
 
 export default Favourite;

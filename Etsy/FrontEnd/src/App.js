@@ -15,6 +15,8 @@ import ProfilePage from './components/Profile/profilePage';
 import ShopPage from './components/Shop/ShopPage';
 import ShopName from './components/Shop/ShopName';
 import SearchPage from './components/SearchPage/SearchPage';
+import LoginForm from './components/loginSignup/login';
+import SignupForm from './components/loginSignup/SignupForm';
 
 function App() {
   return (
@@ -28,8 +30,8 @@ function App() {
         <Route exact path="/" element={<HomePage />} />
           <Route path="/home" element={<HomePage />} />
           {/* <Route path="/navbar" element={<NavBar />} /> */}
-          {/* <Route path="/signup" element={<Signup />} /> */}
-          {/* <Route path="/login" element={<Login />} /> */}
+          <Route path="/signup" element={<SignupForm />} />
+          <Route path="/login" element={<LoginForm />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/profile-page" element={<ProfilePage />} />
           <Route path="/item" element={<Item />} />
